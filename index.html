@@ -40,11 +40,11 @@
     <div class="hint">one screen. type, show, speak, clear. no accounts. no internet.</div>
   </main>
 
-  <button id="panelBackdrop" class="panelBackdrop" type="button" aria-label="Close options"></button>
-  <aside id="optionsPanel" class="optionsPanel" aria-label="options panel" aria-hidden="true">
+  <div id="panelBackdrop" class="panelBackdrop" aria-hidden="true"></div>
+  <aside id="optionsPanel" class="optionsPanel" role="dialog" aria-modal="true" aria-labelledby="optionsTitle" aria-hidden="true" inert>
     <div class="panelHeader">
-      <h2>options</h2>
-      <button id="closeOptionsBtn" class="closeButton" type="button" aria-label="Close options">x</button>
+      <h2 id="optionsTitle">options</h2>
+      <button id="closeOptionsBtn" class="closeButton" type="button" aria-label="Close options">close</button>
     </div>
 
     <label class="field">

@@ -5,7 +5,8 @@ or a yes/no choice on one screen.
 
 The app is intentionally local-only. "Shared" means showing the same screen to
 someone nearby or over screen sharing; there is no account system, network sync,
-database, or persistence.
+or database. Board content is not saved; the selected theme may be remembered by
+the browser.
 
 ## Use
 
@@ -25,8 +26,9 @@ Actions:
 
 Desktop shortcuts:
 
-- `Ctrl+Enter` or `Cmd+Enter`: speak
+- `Ctrl+Enter` or `Cmd+Enter`: speak, except while typing in a text field
 - `Ctrl+Backspace` or `Cmd+Backspace`: clear, except while typing in a text field
+- `Ctrl+,` or `Cmd+,`: open options, except while typing in a text field
 
 ## Browser Notes
 

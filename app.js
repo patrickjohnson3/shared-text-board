@@ -10,6 +10,7 @@ const optionsPanel = document.getElementById('optionsPanel');
 const themeSelect = document.getElementById('themeSelect');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 const themeStorageKey = 'shared-text-board-theme';
+const panelControls = [closeOptionsBtn, themeSelect, fullscreenBtn];
 
 const modes = {
   text: {
@@ -46,6 +47,7 @@ const modes = {
 let mode = 'text';
 let yesNoValue = 'yes?';
 let theme = loadTheme();
+let panelReturnFocus = optionsBtn;
 
 function setStatus(message) {
   statusEl.textContent = message;
@@ -120,24 +122,39 @@ function setTheme(nextTheme) {
   saveTheme(nextTheme);
 }
 
-function setPanelOpen(isOpen) {
+function setPanelOpen(isOpen, options = {}) {
+  const { restoreFocus = true } = options;
+
+  if (isOpen) {
+    panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : optionsBtn;
+  }
+
   body.classList.toggle('panel-open', isOpen);
   optionsBtn.setAttribute('aria-expanded', String(isOpen));
   optionsPanel.setAttribute('aria-hidden', String(!isOpen));
+  optionsPanel.inert = !isOpen;
+  panelControls.forEach((control) => {
+    if (isOpen) {
+      control.removeAttribute('tabindex');
+    } else {
+      control.setAttribute('tabindex', '-1');
+    }
+  });
 
   if (isOpen) {
     themeSelect.focus();
-  } else {
-    optionsBtn.focus();
+  } else if (restoreFocus && panelReturnFocus?.isConnected) {
+    panelReturnFocus.focus();
   }
 }
 
 function openPanel() {
+  if (body.classList.contains('panel-open')) return;
   setPanelOpen(true);
 }
 
-function closePanel() {
-  setPanelOpen(false);
+function closePanel(options = {}) {
+  setPanelOpen(false, options);
 }
 
 function setFullscreenButton() {
@@ -158,6 +175,7 @@ async function toggleFullscreen() {
     } else {
       await document.documentElement.requestFullscreen();
     }
+    closePanel({ restoreFocus: false });
   } catch {
     setStatus('fullscreen blocked');
   }
@@ -167,22 +185,23 @@ function isEditingText(event) {
   return event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
 }
 
-function handleShortcut(event) {
-  const shortcutKey = event.key.toLowerCase();
-  const isCommand = event.ctrlKey || event.metaKey;
-  if (!isCommand) return;
+function isExactCommand(event, key) {
+  const hasOneCommandKey = event.ctrlKey !== event.metaKey;
+  return hasOneCommandKey && !event.altKey && !event.shiftKey && !event.repeat && event.key.toLowerCase() === key;
+}
 
-  if (shortcutKey === 'enter') {
+function handleShortcut(event) {
+  if (isExactCommand(event, 'enter') && !isEditingText(event)) {
     event.preventDefault();
     speak();
   }
 
-  if (shortcutKey === 'backspace' && !isEditingText(event)) {
+  if (isExactCommand(event, 'backspace') && !isEditingText(event)) {
     event.preventDefault();
     clearBoard();
   }
 
-  if (shortcutKey === ',' && !isEditingText(event)) {
+  if (isExactCommand(event, ',') && !isEditingText(event)) {
     event.preventDefault();
     openPanel();
   }
@@ -211,5 +230,6 @@ document.getElementById('clearBtn').addEventListener('click', clearBoard);
 document.addEventListener('fullscreenchange', setFullscreenButton);
 document.addEventListener('keydown', handleShortcut);
 document.addEventListener('keydown', handleEscape);
+setPanelOpen(false, { restoreFocus: false });
 setTheme(theme);
 setFullscreenButton();

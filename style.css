@@ -80,7 +80,7 @@ h1 {
   min-height: 44px;
   border-radius: 14px;
   font-size: 14px;
-  padding: 0 14px;
+  padding: 0 16px;
 }
 
 .modes, .actions {
@@ -250,8 +250,7 @@ body.panel-open .optionsPanel {
 }
 
 .closeButton {
-  width: 44px;
-  padding: 0;
+  min-width: 76px;
 }
 
 .field {
