@@ -20,6 +20,7 @@ Modes:
 Actions:
 
 - `speak`: reads the current board text with the browser Web Speech API
+- `options`: opens a right-side panel for theme and fullscreen controls
 - `clear`: clears the active mode
 
 Desktop shortcuts:

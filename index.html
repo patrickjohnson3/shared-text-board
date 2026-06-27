@@ -33,12 +33,30 @@
 
     <section class="actions" aria-label="actions">
       <button id="speakBtn" type="button">🔊 speak</button>
-      <button id="fullscreenBtn" type="button" aria-pressed="false">full</button>
+      <button id="optionsBtn" type="button" aria-controls="optionsPanel" aria-expanded="false">options</button>
       <button id="clearBtn" class="danger" type="button">clear</button>
     </section>
 
     <div class="hint">one screen. type, show, speak, clear. no accounts. no internet.</div>
   </main>
+
+  <button id="panelBackdrop" class="panelBackdrop" type="button" aria-label="Close options"></button>
+  <aside id="optionsPanel" class="optionsPanel" aria-label="options panel" aria-hidden="true">
+    <div class="panelHeader">
+      <h2>options</h2>
+      <button id="closeOptionsBtn" class="closeButton" type="button" aria-label="Close options">x</button>
+    </div>
+
+    <label class="field">
+      <span>theme</span>
+      <select id="themeSelect">
+        <option value="dark">dark</option>
+        <option value="light">light</option>
+      </select>
+    </label>
+
+    <button id="fullscreenBtn" class="panelAction" type="button" aria-pressed="false">full screen</button>
+  </aside>
 
   <script src="app.js"></script>
 </body>
