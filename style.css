@@ -6,6 +6,10 @@
   --muted: #aeb7c7;
   --accent: #7cc7ff;
   --danger: #ff7474;
+  --speak-bg: #1677d2;
+  --speak-text: #ffffff;
+  --clear-bg: #c83232;
+  --clear-text: #ffffff;
   --focus: #ffd166;
   --placeholder: rgba(244,246,251,.28);
   --soft-panel: rgba(255,255,255,.04);
@@ -25,6 +29,10 @@ body[data-theme="light"] {
   --muted: #536072;
   --accent: #1268b3;
   --danger: #b4232f;
+  --speak-bg: #1268b3;
+  --speak-text: #ffffff;
+  --clear-bg: #b4232f;
+  --clear-text: #ffffff;
   --focus: #8a5a00;
   --placeholder: rgba(16,23,35,.32);
   --soft-panel: rgba(16,23,35,.05);
@@ -193,6 +201,18 @@ textarea::placeholder { color: var(--placeholder); }
 }
 
 .danger { color: var(--danger); }
+
+.speakAction {
+  background: var(--speak-bg);
+  color: var(--speak-text);
+  box-shadow: none;
+}
+
+.clearAction {
+  background: var(--clear-bg);
+  color: var(--clear-text);
+  box-shadow: none;
+}
 
 .optionsButton {
   width: 44px;
