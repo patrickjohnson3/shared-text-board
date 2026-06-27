@@ -3,6 +3,7 @@ const statusEl = document.getElementById('status');
 const textBox = document.getElementById('textBox');
 const numberBox = document.getElementById('numberBox');
 const yesNoDisplay = document.getElementById('yesNoDisplay');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
 
 const modes = {
   text: {
@@ -89,6 +90,29 @@ function clearBoard() {
   modes[mode].clear();
 }
 
+function setFullscreenButton() {
+  const isFullscreen = Boolean(document.fullscreenElement);
+  fullscreenBtn.textContent = isFullscreen ? 'exit' : 'full';
+  fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
+}
+
+async function toggleFullscreen() {
+  if (!document.fullscreenEnabled) {
+    setStatus('fullscreen unavailable');
+    return;
+  }
+
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch {
+    setStatus('fullscreen blocked');
+  }
+}
+
 function isEditingText(event) {
   return event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
 }
@@ -116,5 +140,8 @@ Object.entries(modes).forEach(([modeName, modeConfig]) => {
 document.getElementById('yesBtn').addEventListener('click', () => setYesNo('yes'));
 document.getElementById('noBtn').addEventListener('click', () => setYesNo('no'));
 document.getElementById('speakBtn').addEventListener('click', speak);
+fullscreenBtn.addEventListener('click', toggleFullscreen);
 document.getElementById('clearBtn').addEventListener('click', clearBoard);
+document.addEventListener('fullscreenchange', setFullscreenButton);
 document.addEventListener('keydown', handleShortcut);
+setFullscreenButton();
