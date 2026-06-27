@@ -1,84 +1,108 @@
-const body = document.body;
-const statusEl = document.getElementById('status');
-const textBox = document.getElementById('textBox');
-const numberBox = document.getElementById('numberBox');
-const yesNoDisplay = document.getElementById('yesNoDisplay');
-const optionsBtn = document.getElementById('optionsBtn');
-const closeOptionsBtn = document.getElementById('closeOptionsBtn');
-const panelBackdrop = document.getElementById('panelBackdrop');
-const optionsPanel = document.getElementById('optionsPanel');
-const themeSelect = document.getElementById('themeSelect');
-const fullscreenBtn = document.getElementById('fullscreenBtn');
-const themeStorageKey = 'shared-text-board-theme';
-const panelControls = [closeOptionsBtn, themeSelect, fullscreenBtn];
+// Elements
+const elements = {
+  body: document.body,
+  status: document.getElementById('status'),
+  textBox: document.getElementById('textBox'),
+  numberBox: document.getElementById('numberBox'),
+  yesNoDisplay: document.getElementById('yesNoDisplay'),
+  textMode: document.getElementById('textMode'),
+  numberMode: document.getElementById('numberMode'),
+  yesNoMode: document.getElementById('yesNoMode'),
+  yesBtn: document.getElementById('yesBtn'),
+  noBtn: document.getElementById('noBtn'),
+  speakBtn: document.getElementById('speakBtn'),
+  optionsBtn: document.getElementById('optionsBtn'),
+  clearBtn: document.getElementById('clearBtn'),
+  closeOptionsBtn: document.getElementById('closeOptionsBtn'),
+  panelBackdrop: document.getElementById('panelBackdrop'),
+  optionsPanel: document.getElementById('optionsPanel'),
+  themeSelect: document.getElementById('themeSelect'),
+  fullscreenBtn: document.getElementById('fullscreenBtn')
+};
 
-const modes = {
+const themeStorageKey = 'shared-text-board-theme';
+const panelControls = [elements.closeOptionsBtn, elements.themeSelect, elements.fullscreenBtn];
+
+// State and configuration
+const state = {
+  mode: 'text',
+  yesNoValue: 'yes?',
+  theme: loadTheme(),
+  panelReturnFocus: elements.optionsBtn
+};
+
+const modeConfigs = {
   text: {
-    button: document.getElementById('textMode'),
+    button: elements.textMode,
     className: 'mode-text',
     status: 'text mode',
-    getText: () => textBox.value.trim(),
-    clear: () => {
-      textBox.value = '';
-      textBox.focus();
-    },
-    focus: () => textBox.focus()
+    valueElement: elements.textBox
   },
   number: {
-    button: document.getElementById('numberMode'),
+    button: elements.numberMode,
     className: 'mode-number',
     status: 'number mode',
-    getText: () => numberBox.value.trim(),
-    clear: () => {
-      numberBox.value = '';
-      numberBox.focus();
-    },
-    focus: () => numberBox.focus()
+    valueElement: elements.numberBox
   },
   yesno: {
-    button: document.getElementById('yesNoMode'),
+    button: elements.yesNoMode,
     className: 'mode-yesno',
-    status: 'yes/no mode',
-    getText: () => yesNoValue.trim(),
-    clear: () => setYesNo('yes?')
+    status: 'yes/no mode'
   }
 };
 
-let mode = 'text';
-let yesNoValue = 'yes?';
-let theme = loadTheme();
-let panelReturnFocus = optionsBtn;
+const shortcuts = [
+  { key: 'enter', action: speak, allowInTextField: false },
+  { key: 'backspace', action: clearBoard, allowInTextField: false },
+  { key: ',', action: openPanel, allowInTextField: false }
+];
 
+// Status and modes
 function setStatus(message) {
-  statusEl.textContent = message;
+  elements.status.textContent = message;
 }
 
 function currentText() {
-  return modes[mode].getText();
+  if (state.mode === 'yesno') return state.yesNoValue.trim();
+  return modeConfigs[state.mode].valueElement.value.trim();
 }
 
 function setMode(nextMode) {
-  mode = nextMode;
+  state.mode = nextMode;
 
-  Object.values(modes).forEach((modeConfig) => {
-    const active = modeConfig === modes[nextMode];
-    body.classList.toggle(modeConfig.className, active);
-    modeConfig.button.classList.toggle('active', active);
-    modeConfig.button.setAttribute('aria-pressed', String(active));
+  Object.entries(modeConfigs).forEach(([modeName, config]) => {
+    const active = modeName === nextMode;
+    elements.body.classList.toggle(config.className, active);
+    config.button.classList.toggle('active', active);
+    config.button.setAttribute('aria-pressed', String(active));
   });
 
-  setStatus(modes[nextMode].status);
+  setStatus(modeConfigs[nextMode].status);
 
   window.setTimeout(() => {
-    modes[nextMode].focus?.();
+    modeConfigs[nextMode].valueElement?.focus();
   }, 30);
 }
 
 function setYesNo(value) {
-  yesNoValue = value;
-  yesNoDisplay.textContent = value;
+  state.yesNoValue = value;
+  elements.yesNoDisplay.textContent = value;
 }
 
+function clearBoard() {
+  window.speechSynthesis?.cancel?.();
+
+  if (state.mode === 'yesno') {
+    setYesNo('yes?');
+    return;
+  }
+
+  const valueElement = modeConfigs[state.mode].valueElement;
+  valueElement.value = '';
+  valueElement.focus();
+}
+
+// Speech
 function speak() {
   const text = currentText();
   if (!text) return;
@@ -94,11 +118,7 @@ function speak() {
   window.speechSynthesis.speak(utterance);
 }
 
-function clearBoard() {
-  window.speechSynthesis?.cancel?.();
-  modes[mode].clear();
-}
-
+// Theme
 function loadTheme() {
   try {
     return localStorage.getItem(themeStorageKey) === 'light' ? 'light' : 'dark';
@@ -116,51 +136,52 @@ function saveTheme(nextTheme) {
 }
 
 function setTheme(nextTheme) {
-  theme = nextTheme;
-  body.dataset.theme = nextTheme;
-  themeSelect.value = nextTheme;
+  state.theme = nextTheme;
+  elements.body.dataset.theme = nextTheme;
+  elements.themeSelect.value = nextTheme;
   saveTheme(nextTheme);
 }
 
-function setPanelOpen(isOpen, options = {}) {
-  const { restoreFocus = true } = options;
-
-  if (isOpen) {
-    panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : optionsBtn;
-  }
-
-  body.classList.toggle('panel-open', isOpen);
-  optionsBtn.setAttribute('aria-expanded', String(isOpen));
-  optionsPanel.setAttribute('aria-hidden', String(!isOpen));
-  optionsPanel.inert = !isOpen;
+// Options panel
+function setPanelControlsEnabled(isEnabled) {
+  elements.optionsPanel.inert = !isEnabled;
   panelControls.forEach((control) => {
-    if (isOpen) {
+    if (isEnabled) {
       control.removeAttribute('tabindex');
     } else {
       control.setAttribute('tabindex', '-1');
     }
   });
+}
 
-  if (isOpen) {
-    themeSelect.focus();
-  } else if (restoreFocus && panelReturnFocus?.isConnected) {
-    panelReturnFocus.focus();
-  }
+function syncPanelAttributes(isOpen) {
+  elements.body.classList.toggle('panel-open', isOpen);
+  elements.optionsBtn.setAttribute('aria-expanded', String(isOpen));
+  elements.optionsPanel.setAttribute('aria-hidden', String(!isOpen));
+  setPanelControlsEnabled(isOpen);
 }
 
 function openPanel() {
-  if (body.classList.contains('panel-open')) return;
-  setPanelOpen(true);
+  if (elements.body.classList.contains('panel-open')) return;
+  state.panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : elements.optionsBtn;
+  syncPanelAttributes(true);
+  elements.themeSelect.focus();
 }
 
 function closePanel(options = {}) {
-  setPanelOpen(false, options);
+  const { restoreFocus = true } = options;
+  syncPanelAttributes(false);
+
+  if (restoreFocus && state.panelReturnFocus?.isConnected) {
+    state.panelReturnFocus.focus();
+  }
 }
 
-function setFullscreenButton() {
+// Fullscreen
+function syncFullscreenState() {
   const isFullscreen = Boolean(document.fullscreenElement);
-  fullscreenBtn.textContent = isFullscreen ? 'exit fullscreen' : 'full screen';
-  fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
+  elements.fullscreenBtn.textContent = isFullscreen ? 'exit fullscreen' : 'full screen';
+  elements.fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
 }
 
 async function toggleFullscreen() {
@@ -181,6 +202,7 @@ async function toggleFullscreen() {
   }
 }
 
+// Shortcuts
 function isEditingText(event) {
   return event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
 }
@@ -191,45 +213,47 @@ function isExactCommand(event, key) {
 }
 
 function handleShortcut(event) {
-  if (isExactCommand(event, 'enter') && !isEditingText(event)) {
-    event.preventDefault();
-    speak();
-  }
+  shortcuts.forEach((shortcut) => {
+    if (!isExactCommand(event, shortcut.key)) return;
+    if (!shortcut.allowInTextField && isEditingText(event)) return;
 
-  if (isExactCommand(event, 'backspace') && !isEditingText(event)) {
     event.preventDefault();
-    clearBoard();
-  }
-
-  if (isExactCommand(event, ',') && !isEditingText(event)) {
-    event.preventDefault();
-    openPanel();
-  }
+    shortcut.action();
+  });
 }
 
 function handleEscape(event) {
-  if (event.key === 'Escape' && body.classList.contains('panel-open')) {
+  if (event.key === 'Escape' && elements.body.classList.contains('panel-open')) {
     event.preventDefault();
     closePanel();
   }
 }
 
-Object.entries(modes).forEach(([modeName, modeConfig]) => {
-  modeConfig.button.addEventListener('click', () => setMode(modeName));
-});
+// Events and init
+function bindEvents() {
+  Object.entries(modeConfigs).forEach(([modeName, config]) => {
+    config.button.addEventListener('click', () => setMode(modeName));
+  });
 
-document.getElementById('yesBtn').addEventListener('click', () => setYesNo('yes'));
-document.getElementById('noBtn').addEventListener('click', () => setYesNo('no'));
-document.getElementById('speakBtn').addEventListener('click', speak);
-optionsBtn.addEventListener('click', openPanel);
-closeOptionsBtn.addEventListener('click', closePanel);
-panelBackdrop.addEventListener('click', closePanel);
-themeSelect.addEventListener('change', (event) => setTheme(event.target.value));
-fullscreenBtn.addEventListener('click', toggleFullscreen);
-document.getElementById('clearBtn').addEventListener('click', clearBoard);
-document.addEventListener('fullscreenchange', setFullscreenButton);
-document.addEventListener('keydown', handleShortcut);
-document.addEventListener('keydown', handleEscape);
-setPanelOpen(false, { restoreFocus: false });
-setTheme(theme);
-setFullscreenButton();
+  elements.yesBtn.addEventListener('click', () => setYesNo('yes'));
+  elements.noBtn.addEventListener('click', () => setYesNo('no'));
+  elements.speakBtn.addEventListener('click', speak);
+  elements.optionsBtn.addEventListener('click', openPanel);
+  elements.closeOptionsBtn.addEventListener('click', closePanel);
+  elements.panelBackdrop.addEventListener('click', closePanel);
+  elements.themeSelect.addEventListener('change', (event) => setTheme(event.target.value));
+  elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
+  elements.clearBtn.addEventListener('click', clearBoard);
+  document.addEventListener('fullscreenchange', syncFullscreenState);
+  document.addEventListener('keydown', handleShortcut);
+  document.addEventListener('keydown', handleEscape);
+}
+
+function init() {
+  bindEvents();
+  syncPanelAttributes(false);
+  setTheme(state.theme);
+  syncFullscreenState();
+}
+
+init();

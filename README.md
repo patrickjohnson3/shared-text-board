@@ -34,3 +34,11 @@ Desktop shortcuts:
 
 The app has no build step and no external dependencies. Speech output depends on
 the browser's Web Speech API support and installed voices.
+
+## Checks
+
+Run the no-build smoke check with:
+
+```sh
+node smoke-test.js
+```
