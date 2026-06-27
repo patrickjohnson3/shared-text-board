@@ -26,7 +26,7 @@ const panelControls = [elements.closeOptionsBtn, elements.themeSelect, elements.
 // State and configuration
 const state = {
   mode: 'text',
-  yesNoValue: 'yes?',
+  yesNoValue: '',
   theme: loadTheme(),
   panelReturnFocus: elements.optionsBtn
 };
@@ -93,7 +93,7 @@ function clearBoard() {
   window.speechSynthesis?.cancel?.();
 
   if (state.mode === 'yesno') {
-    setYesNo('yes?');
+    setYesNo('');
     return;
   }
 
