@@ -13,7 +13,7 @@
   --shadow: 0 18px 50px rgba(0,0,0,.35);
   --radius: 24px;
   --tap: 64px;
-  --panel-width: 340px;
+  --panel-width: 380px;
 }
 
 /* Base */
@@ -93,7 +93,7 @@ h1 {
   gap: 10px;
 }
 
-.actions { grid-template-columns: repeat(3, 1fr); }
+.actions { grid-template-columns: 1fr 1fr; }
 
 button, select {
   min-height: var(--tap);
@@ -188,6 +188,17 @@ textarea::placeholder { color: var(--placeholder); }
 
 .danger { color: var(--danger); }
 
+.optionsButton {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  min-height: 48px;
+  border-radius: 999px;
+  padding: 0 16px;
+  font-size: 14px;
+  z-index: 9;
+}
+
 .hint {
   color: var(--muted);
   font-size: 13px;
@@ -210,7 +221,9 @@ body.mode-yesno .yesNo { display: grid; }
   inset: 0;
   min-height: 0;
   border-radius: 0;
-  background: rgba(0,0,0,.34);
+  background: rgba(0,0,0,.46);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   opacity: 0;
   pointer-events: none;
   transition: opacity .18s ease;
@@ -219,16 +232,19 @@ body.mode-yesno .yesNo { display: grid; }
 
 .optionsPanel {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 50%;
+  left: 50%;
   width: min(var(--panel-width), calc(100vw - 28px));
-  height: 100svh;
-  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) 18px;
+  max-height: calc(100svh - 28px);
+  padding: 18px;
   background: var(--panel);
   color: var(--text);
-  box-shadow: var(--shadow), inset 1px 0 0 var(--button-ring);
-  transform: translateX(105%);
-  transition: transform .22s ease;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow), inset 0 0 0 1px var(--button-ring);
+  opacity: 0;
+  overflow: auto;
+  transform: translate(-50%, -46%) scale(.96);
+  transition: opacity .18s ease, transform .22s ease;
   z-index: 11;
 }
 
@@ -238,7 +254,8 @@ body.panel-open .panelBackdrop {
 }
 
 body.panel-open .optionsPanel {
-  transform: translateX(0);
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .panelHeader {
@@ -283,8 +300,9 @@ select {
   .app { grid-template-rows: auto auto 1fr; gap: 8px; }
   header { display: none; }
   button { min-height: 52px; font-size: 18px; }
+  .optionsButton { min-height: 44px; font-size: 14px; }
   .closeButton { min-height: 44px; font-size: 14px; }
   textarea { font-size: clamp(34px, 9vw, 70px); padding: 16px; }
-  .actions { grid-template-columns: repeat(3, 1fr); }
+  .actions { grid-template-columns: 1fr 1fr; }
   .hint { display: none; }
 }
