@@ -4,207 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>shared text board</title>
-  <style>
-    :root {
-      --bg: #101216;
-      --panel: #181c23;
-      --panel2: #202632;
-      --text: #f4f6fb;
-      --muted: #aeb7c7;
-      --accent: #7cc7ff;
-      --danger: #ff7474;
-      --shadow: 0 18px 50px rgba(0,0,0,.35);
-      --radius: 24px;
-      --tap: 64px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      min-height: 100svh;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
-    }
-
-    .app {
-      width: min(780px, 100%);
-      min-height: calc(100svh - 28px);
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 14px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(22px, 5vw, 36px);
-      letter-spacing: -.04em;
-      line-height: 1;
-    }
-
-    .status {
-      color: var(--muted);
-      font-size: 14px;
-      white-space: nowrap;
-    }
-
-    .modes, .actions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .actions { grid-template-columns: 1fr 1fr; }
-
-    button {
-      min-height: var(--tap);
-      border: 0;
-      border-radius: 18px;
-      background: var(--panel2);
-      color: var(--text);
-      font: inherit;
-      font-size: clamp(18px, 4.2vw, 24px);
-      font-weight: 800;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
-      touch-action: manipulation;
-    }
-
-    button:active { transform: translateY(1px) scale(.99); }
-    button.active {
-      background: var(--accent);
-      color: #081018;
-      box-shadow: none;
-    }
-
-    .boardWrap {
-      position: relative;
-      display: grid;
-      min-height: 280px;
-      background: var(--panel);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow), inset 0 0 0 1px rgba(255,255,255,.08);
-      overflow: hidden;
-    }
-
-    textarea, input[type="number"] {
-      width: 100%;
-      min-height: 100%;
-      border: 0;
-      outline: 0;
-      resize: none;
-      background: transparent;
-      color: var(--text);
-      padding: 22px;
-      font: inherit;
-      font-size: clamp(38px, 12vw, 86px);
-      font-weight: 800;
-      line-height: 1.08;
-      letter-spacing: -.04em;
-      caret-color: var(--accent);
-    }
-
-    input[type="number"] {
-      appearance: textfield;
-      -moz-appearance: textfield;
-    }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-    textarea::placeholder, input::placeholder { color: rgba(244,246,251,.28); }
-
-    .yesNo {
-      display: none;
-      grid-template-rows: 1fr auto;
-      gap: 14px;
-      padding: 14px;
-    }
-
-    .yesNoDisplay {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 170px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.04);
-      font-size: clamp(58px, 19vw, 132px);
-      font-weight: 900;
-      letter-spacing: -.06em;
-      overflow-wrap: anywhere;
-    }
-
-    .yesNoButtons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .yesNoButtons button {
-      min-height: 92px;
-      font-size: clamp(28px, 8vw, 54px);
-    }
-
-    .danger { color: var(--danger); }
-
-    .hint {
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
-      margin-top: -3px;
-    }
-
-    body.mode-number #textBox,
-    body.mode-yesno #textBox,
-    body.mode-text #numberBox,
-    body.mode-yesno #numberBox,
-    body.mode-text .yesNo,
-    body.mode-number .yesNo { display: none; }
-
-    body.mode-yesno .yesNo { display: grid; }
-
-    @media (orientation: landscape) and (max-height: 520px) {
-      .app { grid-template-rows: auto auto 1fr; gap: 8px; }
-      header { display: none; }
-      button { min-height: 52px; font-size: 18px; }
-      textarea, input[type="number"] { font-size: clamp(34px, 9vw, 70px); padding: 16px; }
-      .actions { grid-template-columns: 1fr 1fr; }
-      .hint { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="mode-text">
   <main class="app" aria-label="shared text board">
     <header>
       <h1>shared text board</h1>
-      <div class="status" id="status">text mode</div>
+      <div class="status" id="status" role="status" aria-live="polite">text mode</div>
     </header>
 
     <section class="modes" aria-label="input mode">
-      <button id="textMode" class="active" type="button" aria-pressed="true">abc</button>
-      <button id="numberMode" type="button" aria-pressed="false">123</button>
-      <button id="yesNoMode" type="button" aria-pressed="false">yes/no</button>
+      <button id="textMode" class="active" type="button" aria-label="Text mode" aria-pressed="true">abc</button>
+      <button id="numberMode" type="button" aria-label="Number mode" aria-pressed="false">123</button>
+      <button id="yesNoMode" type="button" aria-label="Yes or no mode" aria-pressed="false">yes/no</button>
     </section>
 
     <section class="boardWrap">
       <textarea id="textBox" placeholder="type here" spellcheck="false" autocomplete="off" autocapitalize="sentences" inputmode="text"></textarea>
-      <input id="numberBox" type="number" inputmode="numeric" placeholder="123" autocomplete="off" />
+      <input id="numberBox" type="text" inputmode="numeric" placeholder="123" autocomplete="off" />
       <div class="yesNo" aria-label="yes no board">
         <div id="yesNoDisplay" class="yesNoDisplay">yes?</div>
         <div class="yesNoButtons">
@@ -222,87 +39,6 @@
     <div class="hint">one screen. type, show, speak, clear. no accounts. no internet.</div>
   </main>
 
-  <script>
-    const body = document.body;
-    const statusEl = document.getElementById('status');
-    const textBox = document.getElementById('textBox');
-    const numberBox = document.getElementById('numberBox');
-    const yesNoDisplay = document.getElementById('yesNoDisplay');
-    const buttons = {
-      text: document.getElementById('textMode'),
-      number: document.getElementById('numberMode'),
-      yesno: document.getElementById('yesNoMode')
-    };
-
-    let mode = 'text';
-    let boardText = '';
-
-    function currentText() {
-      if (mode === 'text') return textBox.value.trim();
-      if (mode === 'number') return numberBox.value.trim();
-      return boardText.trim();
-    }
-
-    function setMode(nextMode) {
-      mode = nextMode;
-      body.className = 'mode-' + nextMode;
-
-      Object.entries(buttons).forEach(([key, btn]) => {
-        const active = key === nextMode;
-        btn.classList.toggle('active', active);
-        btn.setAttribute('aria-pressed', String(active));
-      });
-
-      statusEl.textContent = nextMode === 'yesno' ? 'yes/no mode' : nextMode + ' mode';
-
-      window.setTimeout(() => {
-        if (nextMode === 'text') textBox.focus();
-        if (nextMode === 'number') numberBox.focus();
-      }, 30);
-    }
-
-    function setYesNo(value) {
-      boardText = value;
-      yesNoDisplay.textContent = value;
-    }
-
-    function speak() {
-      const text = currentText();
-      if (!text) return;
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function clearBoard() {
-      window.speechSynthesis?.cancel?.();
-      if (mode === 'text') {
-        textBox.value = '';
-        textBox.focus();
-      } else if (mode === 'number') {
-        numberBox.value = '';
-        numberBox.focus();
-      } else {
-        setYesNo('yes?');
-      }
-    }
-
-    buttons.text.addEventListener('click', () => setMode('text'));
-    buttons.number.addEventListener('click', () => setMode('number'));
-    buttons.yesno.addEventListener('click', () => setMode('yesno'));
-
-    document.getElementById('yesBtn').addEventListener('click', () => setYesNo('yes'));
-    document.getElementById('noBtn').addEventListener('click', () => setYesNo('no'));
-    document.getElementById('speakBtn').addEventListener('click', speak);
-    document.getElementById('clearBtn').addEventListener('click', clearBoard);
-
-    // keyboard conveniences for testing on desktop/laptop.
-    document.addEventListener('keydown', (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'enter') speak();
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'backspace') clearBoard();
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
