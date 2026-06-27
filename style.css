@@ -79,6 +79,12 @@ h1 {
   white-space: nowrap;
 }
 
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* Controls */
 .closeButton {
   min-height: 44px;
@@ -189,14 +195,12 @@ textarea::placeholder { color: var(--placeholder); }
 .danger { color: var(--danger); }
 
 .optionsButton {
-  position: fixed;
-  top: max(14px, env(safe-area-inset-top));
-  right: max(14px, env(safe-area-inset-right));
-  min-height: 48px;
-  border-radius: 999px;
-  padding: 0 16px;
-  font-size: 14px;
-  z-index: 9;
+  width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
 }
 
 .hint {
@@ -300,7 +304,6 @@ select {
   .app { grid-template-rows: auto auto 1fr; gap: 8px; }
   header { display: none; }
   button { min-height: 52px; font-size: 18px; }
-  .optionsButton { min-height: 44px; font-size: 14px; }
   .closeButton { min-height: 44px; font-size: 14px; }
   textarea { font-size: clamp(34px, 9vw, 70px); padding: 16px; }
   .actions { grid-template-columns: 1fr 1fr; }
