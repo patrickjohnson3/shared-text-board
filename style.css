@@ -163,7 +163,7 @@ textarea::placeholder { color: var(--placeholder); }
 
 .yesNo {
   display: none;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: minmax(104px, .55fr) 1.45fr;
   gap: 14px;
   padding: 14px;
 }
@@ -173,23 +173,23 @@ textarea::placeholder { color: var(--placeholder); }
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 170px;
+  min-height: 104px;
   border-radius: 18px;
   background: var(--soft-panel);
-  font-size: clamp(58px, 19vw, 132px);
+  font-size: clamp(46px, 14vw, 104px);
   font-weight: 900;
   overflow-wrap: anywhere;
 }
 
 .yesNoButtons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 10px;
 }
 
 .yesNoButtons button {
-  min-height: 92px;
-  font-size: clamp(28px, 8vw, 54px);
+  min-height: 132px;
+  font-size: clamp(46px, 13vw, 92px);
 }
 
 .danger { color: var(--danger); }
