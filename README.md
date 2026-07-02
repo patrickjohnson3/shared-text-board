@@ -37,8 +37,8 @@ the browser's Web Speech API support and installed voices.
 
 ## Checks
 
-Run the no-build smoke check with:
+Run the no-build checks with:
 
 ```sh
-node smoke-test.js
+./check.sh
 ```
