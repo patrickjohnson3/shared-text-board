@@ -189,7 +189,11 @@ function setPanelControlsEnabled(isEnabled) {
   });
 }
 
-function syncPanelAttributes(isOpen) {
+function isPanelOpen() {
+  return elements.body.classList.contains('panel-open');
+}
+
+function syncModalAttributes(isOpen) {
   elements.body.classList.toggle('panel-open', isOpen);
   setInert(elements.app, isOpen);
   elements.app.setAttribute('aria-hidden', String(isOpen));
@@ -198,20 +202,38 @@ function syncPanelAttributes(isOpen) {
   setPanelControlsEnabled(isOpen);
 }
 
-function openPanel() {
-  if (elements.body.classList.contains('panel-open')) return;
-  state.panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : elements.optionsBtn;
-  syncPanelAttributes(true);
+function focusDefaultPanelControl() {
   elements.themeSelect.focus();
 }
 
-function closePanel(options = {}) {
-  const { restoreFocus = true } = options;
-  syncPanelAttributes(false);
-
-  if (restoreFocus && state.panelReturnFocus?.isConnected) {
+function restorePanelFocus() {
+  if (state.panelReturnFocus?.isConnected) {
     state.panelReturnFocus.focus();
   }
+}
+
+function openModal() {
+  if (isPanelOpen()) return;
+  state.panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : elements.optionsBtn;
+  syncModalAttributes(true);
+  focusDefaultPanelControl();
+}
+
+function closeModal(options = {}) {
+  const { restoreFocus = true } = options;
+  syncModalAttributes(false);
+
+  if (restoreFocus) {
+    restorePanelFocus();
+  }
+}
+
+function openPanel() {
+  openModal();
+}
+
+function closePanel(options = {}) {
+  closeModal(options);
 }
 
 // Fullscreen
@@ -260,14 +282,14 @@ function handleShortcut(event) {
 }
 
 function handleEscape(event) {
-  if (event.key === 'Escape' && elements.body.classList.contains('panel-open')) {
+  if (event.key === 'Escape' && isPanelOpen()) {
     event.preventDefault();
     closePanel();
   }
 }
 
 function handlePanelTab(event) {
-  if (event.key !== 'Tab' || !elements.body.classList.contains('panel-open')) return;
+  if (event.key !== 'Tab' || !isPanelOpen()) return;
 
   const firstControl = panelControls[0];
   const lastControl = panelControls[panelControls.length - 1];
@@ -313,7 +335,7 @@ function bindEvents() {
 
 function init() {
   bindEvents();
-  syncPanelAttributes(false);
+  syncModalAttributes(false);
   setTheme(state.theme);
   syncFullscreenState();
 }
