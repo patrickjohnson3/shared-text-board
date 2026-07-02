@@ -122,13 +122,16 @@ class Element {
 }
 
 class InputElement extends Element {}
+class SelectElement extends Element {}
 class TextAreaElement extends Element {}
 
 let globalDocument;
 
 function createElements() {
   const textareas = new Set(['textBox', 'numberBox']);
+  const selects = new Set(['themeSelect']);
   const elements = Object.fromEntries(requiredIds.map((id) => {
+    if (selects.has(id)) return [id, new SelectElement(id, 'select')];
     return [id, textareas.has(id) ? new TextAreaElement(id, 'textarea') : new Element(id, 'button')];
   }));
 
@@ -210,6 +213,7 @@ function createBrowserHarness() {
     document,
     HTMLElement: Element,
     HTMLInputElement: InputElement,
+    HTMLSelectElement: SelectElement,
     HTMLTextAreaElement: TextAreaElement,
     localStorage: {
       getItem(key) {
@@ -252,6 +256,10 @@ async function assertAppBehavior(harness) {
   assert(app.hasAttribute('inert'), 'Main app was not made inert while panel is open');
   assert(!elements.optionsPanel.hasAttribute('inert'), 'Options panel stayed inert after opening');
   assert(document.activeElement === elements.themeSelect, 'Opening panel did not focus theme select');
+
+  elements.themeSelect.value = 'light';
+  await elements.themeSelect.dispatchEvent('change');
+  assert(document.body.dataset.theme === 'light', 'Theme select did not update the body theme');
 
   document.activeElement = document.body;
   await document.dispatchKeydown({ key: 'Tab' });
