@@ -208,7 +208,7 @@ async function toggleFullscreen() {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
     } else {
-      await document.documentElement.requestFullscreen();
+      await elements.app.requestFullscreen();
     }
     closePanel({ restoreFocus: false });
   } catch {
