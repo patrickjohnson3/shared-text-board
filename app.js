@@ -99,7 +99,6 @@ function clearBoard() {
 
   const valueElement = modeConfigs[state.mode].valueElement;
   valueElement.value = '';
-  valueElement.focus();
 }
 
 // Speech
