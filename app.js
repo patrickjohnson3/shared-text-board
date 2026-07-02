@@ -49,18 +49,36 @@ const modeConfigs = {
     button: elements.textMode,
     className: 'mode-text',
     status: 'text mode',
-    valueElement: elements.textBox
+    valueElement: elements.textBox,
+    getText() {
+      return elements.textBox.value.trim();
+    },
+    clear() {
+      elements.textBox.value = '';
+    }
   },
   number: {
     button: elements.numberMode,
     className: 'mode-number',
     status: 'number mode',
-    valueElement: elements.numberBox
+    valueElement: elements.numberBox,
+    getText() {
+      return elements.numberBox.value.trim();
+    },
+    clear() {
+      elements.numberBox.value = '';
+    }
   },
   yesno: {
     button: elements.yesNoMode,
     className: 'mode-yesno',
-    status: 'yes/no mode'
+    status: 'yes/no mode',
+    getText() {
+      return state.yesNoValue.trim();
+    },
+    clear() {
+      setYesNo('');
+    }
   }
 };
 
@@ -76,8 +94,7 @@ function setStatus(message) {
 }
 
 function currentText() {
-  if (state.mode === 'yesno') return state.yesNoValue.trim();
-  return modeConfigs[state.mode].valueElement.value.trim();
+  return modeConfigs[state.mode].getText();
 }
 
 function setMode(nextMode) {
@@ -103,13 +120,7 @@ function clearBoard() {
   window.speechSynthesis?.cancel?.();
   blurActiveTextField();
 
-  if (state.mode === 'yesno') {
-    setYesNo('');
-    return;
-  }
-
-  const valueElement = modeConfigs[state.mode].valueElement;
-  valueElement.value = '';
+  modeConfigs[state.mode].clear();
 }
 
 function blurActiveTextField() {
