@@ -330,22 +330,42 @@ function handlePanelTab(event) {
   }
 }
 
+const modeController = {
+  setMode,
+  setYesNo,
+  clearBoard
+};
+
+const speechController = {
+  speak
+};
+
+const panelController = {
+  open: openPanel,
+  close: closePanel
+};
+
+const fullscreenController = {
+  toggle: toggleFullscreen,
+  sync: syncFullscreenState
+};
+
 // Events and init
 function bindEvents() {
   Object.entries(modeConfigs).forEach(([modeName, config]) => {
-    config.button.addEventListener('click', () => setMode(modeName));
+    config.button.addEventListener('click', () => modeController.setMode(modeName));
   });
 
-  elements.yesBtn.addEventListener('click', () => setYesNo('yes'));
-  elements.noBtn.addEventListener('click', () => setYesNo('no'));
-  elements.speakBtn.addEventListener('click', speak);
-  elements.optionsBtn.addEventListener('click', openPanel);
-  elements.closeOptionsBtn.addEventListener('click', () => closePanel());
-  elements.panelBackdrop.addEventListener('click', () => closePanel());
+  elements.yesBtn.addEventListener('click', () => modeController.setYesNo('yes'));
+  elements.noBtn.addEventListener('click', () => modeController.setYesNo('no'));
+  elements.speakBtn.addEventListener('click', speechController.speak);
+  elements.optionsBtn.addEventListener('click', panelController.open);
+  elements.closeOptionsBtn.addEventListener('click', () => panelController.close());
+  elements.panelBackdrop.addEventListener('click', () => panelController.close());
   elements.themeSelect.addEventListener('change', (event) => setTheme(event.target.value));
-  elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
-  elements.clearBtn.addEventListener('click', clearBoard);
-  document.addEventListener('fullscreenchange', syncFullscreenState);
+  elements.fullscreenBtn.addEventListener('click', fullscreenController.toggle);
+  elements.clearBtn.addEventListener('click', modeController.clearBoard);
+  document.addEventListener('fullscreenchange', fullscreenController.sync);
   document.addEventListener('keydown', handleShortcut);
   document.addEventListener('keydown', handleEscape);
   document.addEventListener('keydown', handlePanelTab);
