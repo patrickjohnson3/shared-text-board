@@ -249,6 +249,12 @@ function handlePanelTab(event) {
   const firstControl = panelControls[0];
   const lastControl = panelControls[panelControls.length - 1];
 
+  if (!panelControls.includes(document.activeElement)) {
+    event.preventDefault();
+    (event.shiftKey ? lastControl : firstControl).focus();
+    return;
+  }
+
   if (event.shiftKey && document.activeElement === firstControl) {
     event.preventDefault();
     lastControl.focus();
