@@ -263,8 +263,8 @@ function bindEvents() {
   elements.noBtn.addEventListener('click', () => setYesNo('no'));
   elements.speakBtn.addEventListener('click', speak);
   elements.optionsBtn.addEventListener('click', openPanel);
-  elements.closeOptionsBtn.addEventListener('click', closePanel);
-  elements.panelBackdrop.addEventListener('click', closePanel);
+  elements.closeOptionsBtn.addEventListener('click', () => closePanel());
+  elements.panelBackdrop.addEventListener('click', () => closePanel());
   elements.themeSelect.addEventListener('change', (event) => setTheme(event.target.value));
   elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
   elements.clearBtn.addEventListener('click', clearBoard);
