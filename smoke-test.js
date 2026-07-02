@@ -24,13 +24,15 @@ const requiredIds = [
   'fullscreenBtn'
 ];
 
-const missingIds = requiredIds.filter((id) => !html.includes(`id="${id}"`));
-if (missingIds.length) {
-  throw new Error(`Missing required element id(s): ${missingIds.join(', ')}`);
-}
-
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function assertRequiredMarkup() {
+  const missingIds = requiredIds.filter((id) => !html.includes(`id="${id}"`));
+  if (missingIds.length) {
+    throw new Error(`Missing required element id(s): ${missingIds.join(', ')}`);
+  }
 }
 
 class ClassList {
@@ -107,111 +109,134 @@ class Element {
   }
 
   focus() {
-    document.activeElement = this;
+    globalDocument.activeElement = this;
   }
 
   blur() {
-    if (document.activeElement === this) document.activeElement = document.body;
+    if (globalDocument.activeElement === this) globalDocument.activeElement = globalDocument.body;
   }
 
   async requestFullscreen() {
-    document.fullscreenElement = this;
+    globalDocument.fullscreenElement = this;
   }
 }
 
 class InputElement extends Element {}
 class TextAreaElement extends Element {}
 
-const app = new Element('', 'main');
-app.classList.add('app');
+let globalDocument;
 
-const elements = Object.fromEntries(requiredIds.map((id) => {
+function createElements() {
   const textareas = new Set(['textBox', 'numberBox']);
-  return [id, textareas.has(id) ? new TextAreaElement(id, 'textarea') : new Element(id, 'button')];
-}));
+  const elements = Object.fromEntries(requiredIds.map((id) => {
+    return [id, textareas.has(id) ? new TextAreaElement(id, 'textarea') : new Element(id, 'button')];
+  }));
 
-elements.status.textContent = 'text mode';
+  elements.status.textContent = 'text mode';
+  return elements;
+}
 
-const document = {
-  activeElement: null,
-  body: new Element('', 'body'),
-  fullscreenElement: null,
-  fullscreenEnabled: true,
-  listeners: {},
-  documentElement: new Element('', 'html'),
-  getElementById(id) {
-    return elements[id] || null;
-  },
-  querySelector(selector) {
-    return selector === '.app' ? app : null;
-  },
-  addEventListener(type, listener) {
-    this.listeners[type] = this.listeners[type] || [];
-    this.listeners[type].push(listener);
-  },
-  async dispatchKeydown(event) {
-    const listeners = this.listeners.keydown || [];
-    for (const listener of listeners) {
-      await listener({
-        altKey: false,
-        ctrlKey: false,
-        metaKey: false,
-        repeat: false,
-        shiftKey: false,
-        target: this.body,
-        preventDefault() {
-          this.defaultPrevented = true;
-        },
-        ...event
-      });
-    }
-  },
-  async exitFullscreen() {
-    this.fullscreenElement = null;
-  }
-};
-
-document.body.classList.add('mode-text');
-document.activeElement = document.body;
-
-const storage = new Map();
-const speech = {
-  lastUtterance: null,
-  cancelCount: 0,
-  cancel() {
-    this.cancelCount += 1;
-  },
-  speak(utterance) {
-    this.lastUtterance = utterance;
-  }
-};
-
-const context = {
-  console,
-  document,
-  HTMLElement: Element,
-  HTMLInputElement: InputElement,
-  HTMLTextAreaElement: TextAreaElement,
-  localStorage: {
-    getItem(key) {
-      return storage.get(key) || null;
+function createDocument(elements, app) {
+  const document = {
+    activeElement: null,
+    body: new Element('', 'body'),
+    fullscreenElement: null,
+    fullscreenEnabled: true,
+    listeners: {},
+    documentElement: new Element('', 'html'),
+    getElementById(id) {
+      return elements[id] || null;
     },
-    setItem(key, value) {
-      storage.set(key, String(value));
+    querySelector(selector) {
+      return selector === '.app' ? app : null;
+    },
+    addEventListener(type, listener) {
+      this.listeners[type] = this.listeners[type] || [];
+      this.listeners[type].push(listener);
+    },
+    async dispatchKeydown(event) {
+      const listeners = this.listeners.keydown || [];
+      for (const listener of listeners) {
+        await listener({
+          altKey: false,
+          ctrlKey: false,
+          metaKey: false,
+          repeat: false,
+          shiftKey: false,
+          target: this.body,
+          preventDefault() {
+            this.defaultPrevented = true;
+          },
+          ...event
+        });
+      }
+    },
+    async exitFullscreen() {
+      this.fullscreenElement = null;
     }
-  },
-  SpeechSynthesisUtterance: function SpeechSynthesisUtterance(text) {
-    this.text = text;
-  },
-  window: {
-    speechSynthesis: speech
-  }
-};
+  };
 
-context.window.document = document;
+  document.body.classList.add('mode-text');
+  document.activeElement = document.body;
+  return document;
+}
 
-async function main() {
+function createSpeechMock() {
+  return {
+    lastUtterance: null,
+    cancelCount: 0,
+    cancel() {
+      this.cancelCount += 1;
+    },
+    speak(utterance) {
+      this.lastUtterance = utterance;
+    }
+  };
+}
+
+function createBrowserHarness() {
+  const app = new Element('', 'main');
+  app.classList.add('app');
+
+  const elements = createElements();
+  const document = createDocument(elements, app);
+  const speech = createSpeechMock();
+  const storage = new Map();
+
+  globalDocument = document;
+
+  const context = {
+    console,
+    document,
+    HTMLElement: Element,
+    HTMLInputElement: InputElement,
+    HTMLTextAreaElement: TextAreaElement,
+    localStorage: {
+      getItem(key) {
+        return storage.get(key) || null;
+      },
+      setItem(key, value) {
+        storage.set(key, String(value));
+      }
+    },
+    SpeechSynthesisUtterance: function SpeechSynthesisUtterance(text) {
+      this.text = text;
+    },
+    window: {
+      speechSynthesis: speech
+    }
+  };
+
+  context.window.document = document;
+  return { app, context, document, elements, speech };
+}
+
+function runApp(context) {
   new vm.Script(script, { filename: 'app.js' }).runInNewContext(context);
+}
+
+async function assertAppBehavior(harness) {
+  const { app, document, elements, speech } = harness;
 
   await elements.numberMode.click();
   assert(document.body.classList.contains('mode-number'), 'Number mode class was not applied');
@@ -237,7 +262,13 @@ async function main() {
 
   await elements.clearBtn.click();
   assert(elements.numberBox.value === '', 'Clear did not empty the active field');
+}
 
+async function main() {
+  assertRequiredMarkup();
+  const harness = createBrowserHarness();
+  runApp(harness.context);
+  await assertAppBehavior(harness);
   console.log('smoke test passed');
 }
 
