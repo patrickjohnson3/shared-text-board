@@ -1,5 +1,6 @@
 // Elements
 const elements = {
+  app: document.querySelector('.app'),
   body: document.body,
   status: document.getElementById('status'),
   textBox: document.getElementById('textBox'),
@@ -159,6 +160,8 @@ function setPanelControlsEnabled(isEnabled) {
 
 function syncPanelAttributes(isOpen) {
   elements.body.classList.toggle('panel-open', isOpen);
+  elements.app.inert = isOpen;
+  elements.app.setAttribute('aria-hidden', String(isOpen));
   elements.optionsBtn.setAttribute('aria-expanded', String(isOpen));
   elements.optionsPanel.setAttribute('aria-hidden', String(!isOpen));
   setPanelControlsEnabled(isOpen);
@@ -232,6 +235,24 @@ function handleEscape(event) {
   }
 }
 
+function handlePanelTab(event) {
+  if (event.key !== 'Tab' || !elements.body.classList.contains('panel-open')) return;
+
+  const firstControl = panelControls[0];
+  const lastControl = panelControls[panelControls.length - 1];
+
+  if (event.shiftKey && document.activeElement === firstControl) {
+    event.preventDefault();
+    lastControl.focus();
+    return;
+  }
+
+  if (!event.shiftKey && document.activeElement === lastControl) {
+    event.preventDefault();
+    firstControl.focus();
+  }
+}
+
 // Events and init
 function bindEvents() {
   Object.entries(modeConfigs).forEach(([modeName, config]) => {
@@ -250,6 +271,7 @@ function bindEvents() {
   document.addEventListener('fullscreenchange', syncFullscreenState);
   document.addEventListener('keydown', handleShortcut);
   document.addEventListener('keydown', handleEscape);
+  document.addEventListener('keydown', handlePanelTab);
 }
 
 function init() {
