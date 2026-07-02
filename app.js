@@ -147,8 +147,16 @@ function setTheme(nextTheme) {
 }
 
 // Options panel
+function setInert(element, isInert) {
+  if (isInert) {
+    element.setAttribute('inert', '');
+  } else {
+    element.removeAttribute('inert');
+  }
+}
+
 function setPanelControlsEnabled(isEnabled) {
-  elements.optionsPanel.inert = !isEnabled;
+  setInert(elements.optionsPanel, !isEnabled);
   panelControls.forEach((control) => {
     if (isEnabled) {
       control.removeAttribute('tabindex');
@@ -160,7 +168,7 @@ function setPanelControlsEnabled(isEnabled) {
 
 function syncPanelAttributes(isOpen) {
   elements.body.classList.toggle('panel-open', isOpen);
-  elements.app.inert = isOpen;
+  setInert(elements.app, isOpen);
   elements.app.setAttribute('aria-hidden', String(isOpen));
   elements.optionsBtn.setAttribute('aria-expanded', String(isOpen));
   elements.optionsPanel.setAttribute('aria-hidden', String(!isOpen));
