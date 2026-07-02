@@ -258,7 +258,7 @@ async function assertAppBehavior(harness) {
   assert(document.activeElement === elements.closeOptionsBtn, 'Tab trap did not recover lost focus');
 
   await elements.fullscreenBtn.click();
-  assert(document.fullscreenElement === app, 'Fullscreen did not target the app shell');
+  assert(document.fullscreenElement === document.body, 'Fullscreen did not target the page body');
 
   await elements.clearBtn.click();
   assert(elements.numberBox.value === '', 'Clear did not empty the active field');
