@@ -97,18 +97,21 @@ function currentText() {
   return modeConfigs[state.mode].getText();
 }
 
-function setMode(nextMode) {
-  blurActiveTextField();
-  state.mode = nextMode;
-
+function syncModeUI() {
   Object.entries(modeConfigs).forEach(([modeName, config]) => {
-    const active = modeName === nextMode;
+    const active = modeName === state.mode;
     elements.body.classList.toggle(config.className, active);
     config.button.classList.toggle('active', active);
     config.button.setAttribute('aria-pressed', String(active));
   });
 
-  setStatus(modeConfigs[nextMode].status);
+  setStatus(modeConfigs[state.mode].status);
+}
+
+function setMode(nextMode) {
+  blurActiveTextField();
+  state.mode = nextMode;
+  syncUI({ mode: true });
 }
 
 function setYesNo(value) {
@@ -164,9 +167,13 @@ function saveTheme(nextTheme) {
 
 function setTheme(nextTheme) {
   state.theme = nextTheme;
-  elements.body.dataset.theme = nextTheme;
-  elements.themeSelect.value = nextTheme;
+  syncUI({ theme: true });
   saveTheme(nextTheme);
+}
+
+function syncThemeUI() {
+  elements.body.dataset.theme = state.theme;
+  elements.themeSelect.value = state.theme;
 }
 
 // Options panel
@@ -215,13 +222,13 @@ function restorePanelFocus() {
 function openModal() {
   if (isPanelOpen()) return;
   state.panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : elements.optionsBtn;
-  syncModalAttributes(true);
+  syncUI({ panelOpen: true });
   focusDefaultPanelControl();
 }
 
 function closeModal(options = {}) {
   const { restoreFocus = true } = options;
-  syncModalAttributes(false);
+  syncUI({ panelOpen: false });
 
   if (restoreFocus) {
     restorePanelFocus();
@@ -241,6 +248,13 @@ function syncFullscreenState() {
   const isFullscreen = Boolean(document.fullscreenElement);
   elements.fullscreenBtn.textContent = isFullscreen ? 'exit fullscreen' : 'full screen';
   elements.fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
+}
+
+function syncUI(options = {}) {
+  if (options.mode) syncModeUI();
+  if (options.theme) syncThemeUI();
+  if (Object.prototype.hasOwnProperty.call(options, 'panelOpen')) syncModalAttributes(options.panelOpen);
+  if (options.fullscreen) syncFullscreenState();
 }
 
 async function toggleFullscreen() {
@@ -339,9 +353,7 @@ function bindEvents() {
 
 function init() {
   bindEvents();
-  syncModalAttributes(false);
-  setTheme(state.theme);
-  syncFullscreenState();
+  syncUI({ mode: true, panelOpen: false, theme: true, fullscreen: true });
 }
 
 init();
