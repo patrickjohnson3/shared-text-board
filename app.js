@@ -82,11 +82,11 @@ const modeConfigs = {
   }
 };
 
-const shortcuts = [
-  { key: 'enter', action: speak, allowInTextField: false },
-  { key: 'backspace', action: clearBoard, allowInTextField: false },
-  { key: ',', action: openPanel, allowInTextField: false }
-];
+const shortcuts = [];
+
+function registerCommandShortcut(key, action) {
+  shortcuts.push({ key, action, ignoreTextFields: true });
+}
 
 // Status and modes
 function setStatus(message) {
@@ -262,6 +262,10 @@ async function toggleFullscreen() {
 }
 
 // Shortcuts
+registerCommandShortcut('enter', speak);
+registerCommandShortcut('backspace', clearBoard);
+registerCommandShortcut(',', openPanel);
+
 function isEditingText(event) {
   return event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
 }
@@ -274,7 +278,7 @@ function isExactCommand(event, key) {
 function handleShortcut(event) {
   shortcuts.forEach((shortcut) => {
     if (!isExactCommand(event, shortcut.key)) return;
-    if (!shortcut.allowInTextField && isEditingText(event)) return;
+    if (shortcut.ignoreTextFields && isEditingText(event)) return;
 
     event.preventDefault();
     shortcut.action();
