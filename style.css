@@ -328,7 +328,7 @@ select {
 
 /* Responsive */
 @media (orientation: landscape) and (max-height: 520px) {
-  .app { grid-template-rows: auto auto 1fr; gap: 8px; }
+  .app { grid-template-rows: auto minmax(0, 1fr) auto; gap: 8px; }
   header { display: none; }
   button { min-height: 52px; font-size: 18px; }
   .closeButton { min-height: 44px; font-size: 14px; }
