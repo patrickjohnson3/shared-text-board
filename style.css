@@ -139,12 +139,6 @@ button {
   touch-action: manipulation;
 }
 
-.actionButton,
-.panelButton,
-.iconButton {
-  box-shadow: inset 0 0 0 1px var(--button-ring);
-}
-
 button:active { transform: translateY(1px) scale(.99); }
 
 button.active {
