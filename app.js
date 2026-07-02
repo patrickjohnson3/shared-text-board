@@ -68,6 +68,7 @@ function currentText() {
 }
 
 function setMode(nextMode) {
+  blurActiveTextField();
   state.mode = nextMode;
 
   Object.entries(modeConfigs).forEach(([modeName, config]) => {
@@ -78,10 +79,6 @@ function setMode(nextMode) {
   });
 
   setStatus(modeConfigs[nextMode].status);
-
-  window.setTimeout(() => {
-    modeConfigs[nextMode].valueElement?.focus();
-  }, 30);
 }
 
 function setYesNo(value) {
@@ -91,6 +88,7 @@ function setYesNo(value) {
 
 function clearBoard() {
   window.speechSynthesis?.cancel?.();
+  blurActiveTextField();
 
   if (state.mode === 'yesno') {
     setYesNo('');
@@ -99,6 +97,12 @@ function clearBoard() {
 
   const valueElement = modeConfigs[state.mode].valueElement;
   valueElement.value = '';
+}
+
+function blurActiveTextField() {
+  if (document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement) {
+    document.activeElement.blur();
+  }
 }
 
 // Speech
