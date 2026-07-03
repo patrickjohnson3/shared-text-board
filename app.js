@@ -350,13 +350,19 @@ function handleEscape(event) {
   }
 }
 
-function handlePanelTab(event) {
-  if (event.key !== 'Tab' || !isPanelOpen()) return;
+function firstFocusable(controls) {
+  return controls[0];
+}
 
-  const firstControl = panelControls[0];
-  const lastControl = panelControls[panelControls.length - 1];
+function lastFocusable(controls) {
+  return controls[controls.length - 1];
+}
 
-  if (!panelControls.includes(document.activeElement)) {
+function trapFocus(event, controls) {
+  const firstControl = firstFocusable(controls);
+  const lastControl = lastFocusable(controls);
+
+  if (!controls.includes(document.activeElement)) {
     event.preventDefault();
     (event.shiftKey ? lastControl : firstControl).focus();
     return;
@@ -372,6 +378,12 @@ function handlePanelTab(event) {
     event.preventDefault();
     firstControl.focus();
   }
+}
+
+function handlePanelTab(event) {
+  if (event.key !== 'Tab' || !isPanelOpen()) return;
+
+  trapFocus(event, panelControls);
 }
 
 // Events and init
