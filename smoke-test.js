@@ -4,25 +4,27 @@ const vm = require('vm');
 const html = fs.readFileSync('index.html', 'utf8');
 const script = fs.readFileSync('app.js', 'utf8');
 
-const requiredIds = [
-  'status',
-  'textBox',
-  'numberBox',
-  'yesNoDisplay',
-  'textMode',
-  'numberMode',
-  'yesNoMode',
-  'yesBtn',
-  'noBtn',
-  'speakBtn',
-  'optionsBtn',
-  'clearBtn',
-  'closeOptionsBtn',
-  'panelBackdrop',
-  'optionsPanel',
-  'themeSelect',
-  'fullscreenBtn'
-];
+const IDS = {
+  status: 'status',
+  textBox: 'textBox',
+  numberBox: 'numberBox',
+  yesNoDisplay: 'yesNoDisplay',
+  textMode: 'textMode',
+  numberMode: 'numberMode',
+  yesNoMode: 'yesNoMode',
+  yesBtn: 'yesBtn',
+  noBtn: 'noBtn',
+  speakBtn: 'speakBtn',
+  optionsBtn: 'optionsBtn',
+  clearBtn: 'clearBtn',
+  closeOptionsBtn: 'closeOptionsBtn',
+  panelBackdrop: 'panelBackdrop',
+  optionsPanel: 'optionsPanel',
+  themeSelect: 'themeSelect',
+  fullscreenBtn: 'fullscreenBtn'
+};
+
+const requiredIds = Object.values(IDS);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -140,8 +142,8 @@ class TextAreaElement extends Element {}
 let globalDocument;
 
 function createElements() {
-  const textareas = new Set(['textBox', 'numberBox']);
-  const selects = new Set(['themeSelect']);
+  const textareas = new Set([IDS.textBox, IDS.numberBox]);
+  const selects = new Set([IDS.themeSelect]);
   const elements = Object.fromEntries(requiredIds.map((id) => {
     if (selects.has(id)) return [id, new SelectElement(id, 'select')];
     return [id, textareas.has(id) ? new TextAreaElement(id, 'textarea') : new Element(id, 'button')];
