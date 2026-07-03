@@ -34,6 +34,7 @@ const elements = {
 };
 
 const themeStorageKey = 'shared-text-board-theme';
+const validThemes = new Set(['dark', 'light']);
 const panelControls = [elements.closeOptionsBtn, elements.themeSelect, elements.fullscreenBtn];
 
 // State and configuration
@@ -175,6 +176,11 @@ function saveTheme(nextTheme) {
 }
 
 function setTheme(nextTheme) {
+  if (!validThemes.has(nextTheme)) {
+    setStatus('theme unavailable');
+    return;
+  }
+
   state.theme = nextTheme;
   syncUI({ theme: true });
   saveTheme(nextTheme);

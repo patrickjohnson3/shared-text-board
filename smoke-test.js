@@ -270,6 +270,10 @@ async function assertAppBehavior(harness) {
   await elements.themeSelect.dispatchEvent('change');
   assert(document.body.dataset.theme === 'light', 'Theme select did not update the body theme');
 
+  context.setTheme('sepia');
+  assert(elements.status.textContent === 'theme unavailable', 'Invalid theme did not update status');
+  assert(document.body.dataset.theme === 'light', 'Invalid theme changed the body theme');
+
   document.activeElement = document.body;
   await document.dispatchKeydown({ key: 'Tab' });
   assert(document.activeElement === elements.closeOptionsBtn, 'Tab trap did not recover lost focus');
