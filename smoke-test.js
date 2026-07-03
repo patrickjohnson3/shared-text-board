@@ -3,7 +3,11 @@ const vm = require('vm');
 
 // Inputs
 const html = fs.readFileSync('index.html', 'utf8');
-const script = fs.readFileSync('app.js', 'utf8');
+const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)]
+  .map((match) => ({
+    filename: match[1],
+    source: fs.readFileSync(match[1], 'utf8')
+  }));
 
 const IDS = {
   status: 'status',
@@ -254,7 +258,10 @@ function createBrowserHarness() {
 }
 
 function runApp(context) {
-  new vm.Script(script, { filename: 'app.js' }).runInNewContext(context);
+  const vmContext = vm.createContext(context);
+  scripts.forEach((script) => {
+    new vm.Script(script.source, { filename: script.filename }).runInContext(vmContext);
+  });
 }
 
 // Behavior assertions
