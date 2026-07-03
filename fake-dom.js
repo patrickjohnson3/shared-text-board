@@ -77,9 +77,19 @@ class Element {
 
   async dispatchEvent(type, event = {}) {
     const listeners = this.listeners[type] || [];
+    const dispatchedEvent = {
+      ...event,
+      target: event.target || this,
+      defaultPrevented: false
+    };
+    dispatchedEvent.preventDefault = function preventDefault() {
+      this.defaultPrevented = true;
+    };
+
     for (const listener of listeners) {
-      await listener({ target: this, preventDefault() {}, ...event });
+      await listener(dispatchedEvent);
     }
+    return dispatchedEvent;
   }
 
   click() {

@@ -128,20 +128,24 @@ function createDocument(elements, app) {
     },
     async dispatchKeydown(event) {
       const listeners = this.listeners.keydown || [];
+      const dispatchedEvent = {
+        altKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        repeat: false,
+        shiftKey: false,
+        target: this.body,
+        ...event,
+        defaultPrevented: false
+      };
+      dispatchedEvent.preventDefault = function preventDefault() {
+        this.defaultPrevented = true;
+      };
+
       for (const listener of listeners) {
-        await listener({
-          altKey: false,
-          ctrlKey: false,
-          metaKey: false,
-          repeat: false,
-          shiftKey: false,
-          target: this.body,
-          preventDefault() {
-            this.defaultPrevented = true;
-          },
-          ...event
-        });
+        await listener(dispatchedEvent);
       }
+      return dispatchedEvent;
     },
     async exitFullscreen() {
       this.fullscreenElement = null;
@@ -241,14 +245,17 @@ async function assertAppBehavior(harness) {
     this.lastUtterance = utterance;
   };
   elements.numberBox.value = '456';
-  await document.dispatchKeydown({ key: 'Enter', ctrlKey: true });
+  const speakShortcutEvent = await document.dispatchKeydown({ key: 'Enter', ctrlKey: true });
   assert(speech.lastUtterance.text === '456', 'Command shortcut did not speak current text');
+  assert(speakShortcutEvent.defaultPrevented, 'Speak shortcut did not prevent default browser behavior');
 
   elements.numberBox.value = '789';
-  await document.dispatchKeydown({ key: 'Backspace', ctrlKey: true });
+  const clearShortcutEvent = await document.dispatchKeydown({ key: 'Backspace', ctrlKey: true });
   assert(elements.numberBox.value === '', 'Command shortcut did not clear active field');
+  assert(clearShortcutEvent.defaultPrevented, 'Clear shortcut did not prevent default browser behavior');
 
-  await document.dispatchKeydown({ key: ',', ctrlKey: true });
+  const optionsShortcutEvent = await document.dispatchKeydown({ key: ',', ctrlKey: true });
+  assert(optionsShortcutEvent.defaultPrevented, 'Options shortcut did not prevent default browser behavior');
   assert(document.body.classList.contains('panel-open'), 'Options panel did not open');
   assert(app.hasAttribute('inert'), 'Main app was not made inert while panel is open');
   assert(!elements.optionsPanel.hasAttribute('inert'), 'Options panel stayed inert after opening');
