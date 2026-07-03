@@ -1,4 +1,9 @@
-const panelControls = [elements.closeOptionsBtn, elements.themeSelect, elements.fullscreenBtn];
+const panelControlSelector = 'button, select, textarea, input, [tabindex]:not([tabindex="-1"])';
+
+function getPanelControls() {
+  return Array.from(elements.optionsPanel.querySelectorAll(panelControlSelector))
+    .filter((control) => !control.hasAttribute('disabled'));
+}
 
 function setInert(element, isInert) {
   if (isInert) {
@@ -10,7 +15,7 @@ function setInert(element, isInert) {
 
 function setPanelControlsEnabled(isEnabled) {
   setInert(elements.optionsPanel, !isEnabled);
-  panelControls.forEach((control) => {
+  getPanelControls().forEach((control) => {
     if (isEnabled) {
       control.removeAttribute('tabindex');
     } else {
@@ -99,5 +104,5 @@ function trapFocus(event, controls) {
 function handlePanelTab(event) {
   if (event.key !== 'Tab' || !isPanelOpen()) return;
 
-  trapFocus(event, panelControls);
+  trapFocus(event, getPanelControls());
 }

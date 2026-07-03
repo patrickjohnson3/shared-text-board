@@ -95,6 +95,7 @@ class Element {
     this.listeners = {};
     this.textContent = '';
     this.value = '';
+    this.focusableControls = [];
   }
 
   setAttribute(name, value) {
@@ -116,6 +117,10 @@ class Element {
   addEventListener(type, listener) {
     this.listeners[type] = this.listeners[type] || [];
     this.listeners[type].push(listener);
+  }
+
+  querySelectorAll() {
+    return this.focusableControls;
   }
 
   async dispatchEvent(type, event = {}) {
@@ -158,6 +163,11 @@ function createElements() {
   }));
 
   elements.status.textContent = 'text mode';
+  elements.optionsPanel.focusableControls = [
+    elements.closeOptionsBtn,
+    elements.themeSelect,
+    elements.fullscreenBtn
+  ];
   return elements;
 }
 
