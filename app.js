@@ -257,6 +257,12 @@ function syncUI(options = {}) {
   if (options.fullscreen) syncFullscreenState();
 }
 
+function fullscreenTarget() {
+  if (typeof elements.body.requestFullscreen === 'function') return elements.body;
+  if (typeof document.documentElement.requestFullscreen === 'function') return document.documentElement;
+  return null;
+}
+
 async function toggleFullscreen() {
   if (!document.fullscreenEnabled) {
     setStatus('fullscreen unavailable');
@@ -267,7 +273,12 @@ async function toggleFullscreen() {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
     } else {
-      await elements.body.requestFullscreen();
+      const target = fullscreenTarget();
+      if (!target) {
+        setStatus('fullscreen unavailable');
+        return;
+      }
+      await target.requestFullscreen();
     }
     closePanel({ restoreFocus: false });
   } catch {

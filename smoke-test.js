@@ -268,6 +268,11 @@ async function assertAppBehavior(harness) {
   await elements.fullscreenBtn.click();
   assert(document.fullscreenElement === document.body, 'Fullscreen did not target the page body');
 
+  await document.exitFullscreen();
+  document.body.requestFullscreen = undefined;
+  await elements.fullscreenBtn.click();
+  assert(document.fullscreenElement === document.documentElement, 'Fullscreen did not fall back to the document root');
+
   await elements.clearBtn.click();
   assert(elements.numberBox.value === '', 'Clear did not empty the active field');
 }
