@@ -57,6 +57,14 @@ function assertStatus(elements, expected, message) {
   assert(elements.status.textContent === expected, message);
 }
 
+function assertText(element, expected, message) {
+  assert(element.textContent === expected, message);
+}
+
+function assertPressed(button, expected, message) {
+  assert(button.getAttribute('aria-pressed') === String(expected), message);
+}
+
 function assertTheme(document, expected, message) {
   assert(document.body.dataset.theme === expected, message);
 }
@@ -299,7 +307,7 @@ async function assertAppBehavior(harness) {
   await elements.numberMode.click();
   assert(document.body.classList.contains('mode-number'), 'Number mode class was not applied');
   assertStatus(elements, 'number mode', 'Number mode status was not updated');
-  assert(elements.numberMode.getAttribute('aria-pressed') === 'true', 'Number mode aria state was not updated');
+  assertPressed(elements.numberMode, true, 'Number mode aria state was not updated');
 
   elements.numberBox.value = '123';
   await elements.speakBtn.click();
@@ -339,16 +347,16 @@ async function assertAppBehavior(harness) {
 
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, document.body, 'Fullscreen did not target the page body');
-  assert(elements.fullscreenBtn.textContent === 'exit fullscreen', 'Fullscreen button label did not update after entering fullscreen');
+  assertText(elements.fullscreenBtn, 'exit fullscreen', 'Fullscreen button label did not update after entering fullscreen');
 
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, null, 'Fullscreen did not exit');
-  assert(elements.fullscreenBtn.textContent === 'full screen', 'Fullscreen button label did not update after exiting fullscreen');
+  assertText(elements.fullscreenBtn, 'full screen', 'Fullscreen button label did not update after exiting fullscreen');
 
   document.body.requestFullscreen = undefined;
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, document.documentElement, 'Fullscreen did not fall back to the document root');
-  assert(elements.fullscreenBtn.textContent === 'exit fullscreen', 'Fullscreen button label did not update after fallback fullscreen');
+  assertText(elements.fullscreenBtn, 'exit fullscreen', 'Fullscreen button label did not update after fallback fullscreen');
 
   await elements.clearBtn.click();
   assert(elements.numberBox.value === '', 'Clear did not empty the active field');
