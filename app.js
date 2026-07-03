@@ -136,7 +136,7 @@ function setMode(nextMode) {
 
   blurActiveTextField();
   state.mode = nextMode;
-  syncUI({ mode: true });
+  syncModeUI();
 }
 
 function setYesNo(value) {
@@ -207,7 +207,7 @@ function setTheme(nextTheme) {
   }
 
   state.theme = nextTheme;
-  syncUI({ theme: true });
+  syncThemeUI();
   saveTheme(nextTheme);
 }
 
@@ -262,13 +262,13 @@ function restorePanelFocus() {
 function openModal() {
   if (isPanelOpen()) return;
   state.panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : elements.optionsBtn;
-  syncUI({ panelOpen: true });
+  syncModalAttributes(true);
   focusDefaultPanelControl();
 }
 
 function closeModal(options = {}) {
   const { restoreFocus = true } = options;
-  syncUI({ panelOpen: false });
+  syncModalAttributes(false);
 
   if (restoreFocus) {
     restorePanelFocus();
@@ -288,13 +288,6 @@ function syncFullscreenState() {
   const isFullscreen = Boolean(document.fullscreenElement);
   elements.fullscreenBtn.textContent = isFullscreen ? 'exit fullscreen' : 'full screen';
   elements.fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
-}
-
-function syncUI(options = {}) {
-  if (options.mode) syncModeUI();
-  if (options.theme) syncThemeUI();
-  if (Object.prototype.hasOwnProperty.call(options, 'panelOpen')) syncModalAttributes(options.panelOpen);
-  if (options.fullscreen) syncFullscreenState();
 }
 
 function fullscreenTarget() {
@@ -405,7 +398,10 @@ function bindEvents() {
 function init() {
   renderThemeOptions();
   bindEvents();
-  syncUI({ mode: true, panelOpen: false, theme: true, fullscreen: true });
+  syncModeUI();
+  syncModalAttributes(false);
+  syncThemeUI();
+  syncFullscreenState();
 }
 
 init();
