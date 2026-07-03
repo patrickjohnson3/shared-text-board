@@ -34,7 +34,11 @@ const elements = {
 };
 
 const themeStorageKey = 'shared-text-board-theme';
-const validThemes = new Set(['dark', 'light']);
+const THEME_OPTIONS = [
+  { value: 'dark', label: 'dark' },
+  { value: 'light', label: 'light' }
+];
+const validThemes = new Set(THEME_OPTIONS.map((theme) => theme.value));
 const panelControls = [elements.closeOptionsBtn, elements.themeSelect, elements.fullscreenBtn];
 const STATUS = {
   modeUnavailable: 'mode unavailable',
@@ -188,6 +192,12 @@ function saveTheme(nextTheme) {
   } catch {
     return;
   }
+}
+
+function renderThemeOptions() {
+  elements.themeSelect.innerHTML = THEME_OPTIONS
+    .map((theme) => `<option value="${theme.value}">${theme.label}</option>`)
+    .join('');
 }
 
 function setTheme(nextTheme) {
@@ -393,6 +403,7 @@ function bindEvents() {
 }
 
 function init() {
+  renderThemeOptions();
   bindEvents();
   syncUI({ mode: true, panelOpen: false, theme: true, fullscreen: true });
 }
