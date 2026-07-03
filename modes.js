@@ -2,16 +2,21 @@ function modeClass(modeName) {
   return `mode-${modeName}`;
 }
 
-function createModeConfig({ modeName, button, status, valueElement }) {
+function createModeConfig({ modeName, button, status, valueElement, getText, clear }) {
   return {
     button,
     className: modeClass(modeName),
     status,
     valueElement,
     getText() {
+      if (getText) return getText();
       return valueElement.value.trim();
     },
     clear() {
+      if (clear) {
+        clear();
+        return;
+      }
       valueElement.value = '';
     }
   };
@@ -30,9 +35,9 @@ const modeConfigs = {
     status: 'number mode',
     valueElement: elements.numberBox
   }),
-  yesno: {
+  yesno: createModeConfig({
+    modeName: 'yesno',
     button: elements.yesNoMode,
-    className: modeClass('yesno'),
     status: 'yes/no mode',
     getText() {
       return state.yesNoValue.trim();
@@ -40,7 +45,7 @@ const modeConfigs = {
     clear() {
       setYesNo('');
     }
-  }
+  })
 };
 
 function currentText() {
