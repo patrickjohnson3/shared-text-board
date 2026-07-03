@@ -53,10 +53,14 @@ const state = {
   panelReturnFocus: elements.optionsBtn
 };
 
-function createModeConfig({ button, className, status, valueElement }) {
+function modeClass(modeName) {
+  return `mode-${modeName}`;
+}
+
+function createModeConfig({ modeName, button, status, valueElement }) {
   return {
     button,
-    className,
+    className: modeClass(modeName),
     status,
     valueElement,
     getText() {
@@ -70,20 +74,20 @@ function createModeConfig({ button, className, status, valueElement }) {
 
 const modeConfigs = {
   text: createModeConfig({
+    modeName: 'text',
     button: elements.textMode,
-    className: 'mode-text',
     status: 'text mode',
     valueElement: elements.textBox
   }),
   number: createModeConfig({
+    modeName: 'number',
     button: elements.numberMode,
-    className: 'mode-number',
     status: 'number mode',
     valueElement: elements.numberBox
   }),
   yesno: {
     button: elements.yesNoMode,
-    className: 'mode-yesno',
+    className: modeClass('yesno'),
     status: 'yes/no mode',
     getText() {
       return state.yesNoValue.trim();
