@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)]
     filename: match[1],
     source: fs.readFileSync(match[1], 'utf8')
   }));
-const expectedScripts = ['dom.js', 'modes.js', 'panel.js', 'speech.js', 'fullscreen.js', 'app.js'];
+const expectedScripts = ['dom.js', 'theme.js', 'modes.js', 'panel.js', 'speech.js', 'fullscreen.js', 'app.js'];
 const expectedPanelControlSelector = 'button, select, textarea, input, [tabindex]:not([tabindex="-1"])';
 
 const IDS = {
