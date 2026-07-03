@@ -251,6 +251,12 @@ async function assertAppBehavior(harness) {
   await elements.speakBtn.click();
   assert(speech.lastUtterance.text === '123', 'Speak did not read current mode text');
 
+  speech.speak = () => {
+    throw new Error('blocked');
+  };
+  await elements.speakBtn.click();
+  assert(elements.status.textContent === 'speech blocked', 'Blocked speech did not update status');
+
   await elements.optionsBtn.click();
   assert(document.body.classList.contains('panel-open'), 'Options panel did not open');
   assert(app.hasAttribute('inert'), 'Main app was not made inert while panel is open');
