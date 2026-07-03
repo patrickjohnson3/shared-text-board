@@ -8,7 +8,7 @@ const STATUS = {
 };
 
 const state = {
-  mode: 'text',
+  mode: MODES.text,
   yesNoValue: '',
   theme: loadTheme(),
   panelReturnFocus: elements.optionsBtn

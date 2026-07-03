@@ -1,3 +1,9 @@
+const MODES = {
+  text: 'text',
+  number: 'number',
+  yesno: 'yesno'
+};
+
 function modeClass(modeName) {
   return `mode-${modeName}`;
 }
@@ -28,20 +34,20 @@ function createModeConfig({ modeName, button, status, valueElement, getText, cle
 }
 
 const modeConfigs = {
-  text: createModeConfig({
-    modeName: 'text',
+  [MODES.text]: createModeConfig({
+    modeName: MODES.text,
     button: elements.textMode,
     status: 'text mode',
     valueElement: elements.textBox
   }),
-  number: createModeConfig({
-    modeName: 'number',
+  [MODES.number]: createModeConfig({
+    modeName: MODES.number,
     button: elements.numberMode,
     status: 'number mode',
     valueElement: elements.numberBox
   }),
-  yesno: createModeConfig({
-    modeName: 'yesno',
+  [MODES.yesno]: createModeConfig({
+    modeName: MODES.yesno,
     button: elements.yesNoMode,
     status: 'yes/no mode',
     getText() {
