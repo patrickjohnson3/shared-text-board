@@ -35,6 +35,18 @@ function assertRequiredMarkup() {
   }
 }
 
+function assertStatus(elements, expected, message) {
+  assert(elements.status.textContent === expected, message);
+}
+
+function assertTheme(document, expected, message) {
+  assert(document.body.dataset.theme === expected, message);
+}
+
+function assertFullscreenTarget(document, expected, message) {
+  assert(document.fullscreenElement === expected, message);
+}
+
 class ClassList {
   constructor(...names) {
     this.names = new Set(names);
@@ -243,11 +255,11 @@ async function assertAppBehavior(harness) {
   const { app, context, document, elements, speech } = harness;
 
   context.setMode('missing');
-  assert(elements.status.textContent === 'mode unavailable', 'Invalid mode did not update status');
+  assertStatus(elements, 'mode unavailable', 'Invalid mode did not update status');
 
   await elements.numberMode.click();
   assert(document.body.classList.contains('mode-number'), 'Number mode class was not applied');
-  assert(elements.status.textContent === 'number mode', 'Number mode status was not updated');
+  assertStatus(elements, 'number mode', 'Number mode status was not updated');
   assert(elements.numberMode.getAttribute('aria-pressed') === 'true', 'Number mode aria state was not updated');
 
   elements.numberBox.value = '123';
@@ -258,7 +270,7 @@ async function assertAppBehavior(harness) {
     throw new Error('blocked');
   };
   await elements.speakBtn.click();
-  assert(elements.status.textContent === 'speech blocked', 'Blocked speech did not update status');
+  assertStatus(elements, 'speech blocked', 'Blocked speech did not update status');
 
   await elements.optionsBtn.click();
   assert(document.body.classList.contains('panel-open'), 'Options panel did not open');
@@ -268,23 +280,23 @@ async function assertAppBehavior(harness) {
 
   elements.themeSelect.value = 'light';
   await elements.themeSelect.dispatchEvent('change');
-  assert(document.body.dataset.theme === 'light', 'Theme select did not update the body theme');
+  assertTheme(document, 'light', 'Theme select did not update the body theme');
 
   context.setTheme('sepia');
-  assert(elements.status.textContent === 'theme unavailable', 'Invalid theme did not update status');
-  assert(document.body.dataset.theme === 'light', 'Invalid theme changed the body theme');
+  assertStatus(elements, 'theme unavailable', 'Invalid theme did not update status');
+  assertTheme(document, 'light', 'Invalid theme changed the body theme');
 
   document.activeElement = document.body;
   await document.dispatchKeydown({ key: 'Tab' });
   assert(document.activeElement === elements.closeOptionsBtn, 'Tab trap did not recover lost focus');
 
   await elements.fullscreenBtn.click();
-  assert(document.fullscreenElement === document.body, 'Fullscreen did not target the page body');
+  assertFullscreenTarget(document, document.body, 'Fullscreen did not target the page body');
 
   await document.exitFullscreen();
   document.body.requestFullscreen = undefined;
   await elements.fullscreenBtn.click();
-  assert(document.fullscreenElement === document.documentElement, 'Fullscreen did not fall back to the document root');
+  assertFullscreenTarget(document, document.documentElement, 'Fullscreen did not fall back to the document root');
 
   await elements.clearBtn.click();
   assert(elements.numberBox.value === '', 'Clear did not empty the active field');
