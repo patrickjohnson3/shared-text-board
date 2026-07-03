@@ -199,11 +199,15 @@ function createBrowserHarness() {
   return { app, context, document, elements, speech };
 }
 
-function runApp(context) {
+function runScriptsInBrowserOrder(context) {
   const vmContext = vm.createContext(context);
   scripts.forEach((script) => {
     new vm.Script(script.source, { filename: script.filename }).runInContext(vmContext);
   });
+}
+
+function runApp(context) {
+  runScriptsInBrowserOrder(context);
 }
 
 // Behavior assertions
