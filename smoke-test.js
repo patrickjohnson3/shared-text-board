@@ -8,6 +8,7 @@ const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)]
     filename: match[1],
     source: fs.readFileSync(match[1], 'utf8')
   }));
+const expectedScripts = ['dom.js', 'modes.js', 'panel.js', 'speech.js', 'fullscreen.js', 'app.js'];
 
 const IDS = {
   status: 'status',
@@ -41,6 +42,14 @@ function assertRequiredMarkup() {
   if (missingIds.length) {
     throw new Error(`Missing required element id(s): ${missingIds.join(', ')}`);
   }
+}
+
+function assertScriptOrder() {
+  const scriptFilenames = scripts.map((script) => script.filename);
+  assert(
+    scriptFilenames.join(',') === expectedScripts.join(','),
+    `Unexpected script order: ${scriptFilenames.join(', ')}`
+  );
 }
 
 function assertStatus(elements, expected, message) {
@@ -329,6 +338,7 @@ async function assertAppBehavior(harness) {
 // Runner
 async function main() {
   assertRequiredMarkup();
+  assertScriptOrder();
   const harness = createBrowserHarness();
   runApp(harness.context);
   await assertAppBehavior(harness);
