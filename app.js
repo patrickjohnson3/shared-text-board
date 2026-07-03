@@ -25,24 +25,39 @@ function handleEscape(event) {
   }
 }
 
-function bindEvents() {
+function bindModeEvents() {
   Object.entries(modeConfigs).forEach(([modeName, config]) => {
     config.button.addEventListener('click', () => setMode(modeName));
   });
+}
 
+function bindActionEvents() {
   elements.yesBtn.addEventListener('click', () => setYesNo('yes'));
   elements.noBtn.addEventListener('click', () => setYesNo('no'));
   elements.speakBtn.addEventListener('click', speak);
+  elements.clearBtn.addEventListener('click', clearBoard);
+}
+
+function bindPanelEvents() {
   elements.optionsBtn.addEventListener('click', openPanel);
   elements.closeOptionsBtn.addEventListener('click', () => closePanel());
   elements.panelBackdrop.addEventListener('click', () => closePanel());
   elements.themeSelect.addEventListener('change', (event) => setTheme(event.target.value));
   elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
-  elements.clearBtn.addEventListener('click', clearBoard);
+}
+
+function bindDocumentEvents() {
   document.addEventListener('fullscreenchange', syncFullscreenState);
   document.addEventListener('keydown', handleShortcut);
   document.addEventListener('keydown', handleEscape);
   document.addEventListener('keydown', handlePanelTab);
+}
+
+function bindEvents() {
+  bindModeEvents();
+  bindActionEvents();
+  bindPanelEvents();
+  bindDocumentEvents();
 }
 
 function init() {
