@@ -237,7 +237,18 @@ async function assertAppBehavior(harness) {
   await elements.speakBtn.click();
   assertStatus(elements, 'speech blocked', 'Blocked speech did not update status');
 
-  await elements.optionsBtn.click();
+  speech.speak = function speak(utterance) {
+    this.lastUtterance = utterance;
+  };
+  elements.numberBox.value = '456';
+  await document.dispatchKeydown({ key: 'Enter', ctrlKey: true });
+  assert(speech.lastUtterance.text === '456', 'Command shortcut did not speak current text');
+
+  elements.numberBox.value = '789';
+  await document.dispatchKeydown({ key: 'Backspace', ctrlKey: true });
+  assert(elements.numberBox.value === '', 'Command shortcut did not clear active field');
+
+  await document.dispatchKeydown({ key: ',', ctrlKey: true });
   assert(document.body.classList.contains('panel-open'), 'Options panel did not open');
   assert(app.hasAttribute('inert'), 'Main app was not made inert while panel is open');
   assert(!elements.optionsPanel.hasAttribute('inert'), 'Options panel stayed inert after opening');
