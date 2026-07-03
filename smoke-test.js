@@ -165,6 +165,10 @@ class TextAreaElement extends Element {}
 let globalDocument;
 
 // Browser harness
+function setPanelControls(elements, controls) {
+  elements.optionsPanel.focusableControls = controls;
+}
+
 function createElements() {
   const textareas = new Set([IDS.textBox, IDS.numberBox]);
   const selects = new Set([IDS.themeSelect]);
@@ -174,11 +178,11 @@ function createElements() {
   }));
 
   elements.status.textContent = 'text mode';
-  elements.optionsPanel.focusableControls = [
+  setPanelControls(elements, [
     elements.closeOptionsBtn,
     elements.themeSelect,
     elements.fullscreenBtn
-  ];
+  ]);
   return elements;
 }
 
@@ -325,13 +329,13 @@ async function assertAppBehavior(harness) {
   await document.dispatchKeydown({ key: 'Tab' });
   assert(document.activeElement === elements.closeOptionsBtn, 'Tab trap did not recover lost focus');
 
-  elements.optionsPanel.focusableControls = [];
+  setPanelControls(elements, []);
   await document.dispatchKeydown({ key: 'Tab' });
-  elements.optionsPanel.focusableControls = [
+  setPanelControls(elements, [
     elements.closeOptionsBtn,
     elements.themeSelect,
     elements.fullscreenBtn
-  ];
+  ]);
 
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, document.body, 'Fullscreen did not target the page body');
