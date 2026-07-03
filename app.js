@@ -53,31 +53,34 @@ const state = {
   panelReturnFocus: elements.optionsBtn
 };
 
+function createModeConfig({ button, className, status, valueElement }) {
+  return {
+    button,
+    className,
+    status,
+    valueElement,
+    getText() {
+      return valueElement.value.trim();
+    },
+    clear() {
+      valueElement.value = '';
+    }
+  };
+}
+
 const modeConfigs = {
-  text: {
+  text: createModeConfig({
     button: elements.textMode,
     className: 'mode-text',
     status: 'text mode',
-    valueElement: elements.textBox,
-    getText() {
-      return elements.textBox.value.trim();
-    },
-    clear() {
-      elements.textBox.value = '';
-    }
-  },
-  number: {
+    valueElement: elements.textBox
+  }),
+  number: createModeConfig({
     button: elements.numberMode,
     className: 'mode-number',
     status: 'number mode',
-    valueElement: elements.numberBox,
-    getText() {
-      return elements.numberBox.value.trim();
-    },
-    clear() {
-      elements.numberBox.value = '';
-    }
-  },
+    valueElement: elements.numberBox
+  }),
   yesno: {
     button: elements.yesNoMode,
     className: 'mode-yesno',
