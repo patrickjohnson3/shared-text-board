@@ -1,6 +1,7 @@
 const fs = require('fs');
 const vm = require('vm');
 
+// Inputs
 const html = fs.readFileSync('index.html', 'utf8');
 const script = fs.readFileSync('app.js', 'utf8');
 
@@ -26,6 +27,7 @@ const IDS = {
 
 const requiredIds = Object.values(IDS);
 
+// Assertions
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -49,6 +51,7 @@ function assertFullscreenTarget(document, expected, message) {
   assert(document.fullscreenElement === expected, message);
 }
 
+// Fake DOM
 class ClassList {
   constructor(...names) {
     this.names = new Set(names);
@@ -141,6 +144,7 @@ class TextAreaElement extends Element {}
 
 let globalDocument;
 
+// Browser harness
 function createElements() {
   const textareas = new Set([IDS.textBox, IDS.numberBox]);
   const selects = new Set([IDS.themeSelect]);
@@ -253,6 +257,7 @@ function runApp(context) {
   new vm.Script(script, { filename: 'app.js' }).runInNewContext(context);
 }
 
+// Behavior assertions
 async function assertAppBehavior(harness) {
   const { app, context, document, elements, speech } = harness;
 
@@ -304,6 +309,7 @@ async function assertAppBehavior(harness) {
   assert(elements.numberBox.value === '', 'Clear did not empty the active field');
 }
 
+// Runner
 async function main() {
   assertRequiredMarkup();
   const harness = createBrowserHarness();
