@@ -4,6 +4,12 @@ const MODES = {
   yesno: 'yesno'
 };
 
+const MODE_STATUS = {
+  [MODES.text]: 'text mode',
+  [MODES.number]: 'number mode',
+  [MODES.yesno]: 'yes/no mode'
+};
+
 function modeClass(modeName) {
   return `mode-${modeName}`;
 }
@@ -37,19 +43,19 @@ const modeConfigs = {
   [MODES.text]: createModeConfig({
     modeName: MODES.text,
     button: elements.textMode,
-    status: 'text mode',
+    status: MODE_STATUS[MODES.text],
     valueElement: elements.textBox
   }),
   [MODES.number]: createModeConfig({
     modeName: MODES.number,
     button: elements.numberMode,
-    status: 'number mode',
+    status: MODE_STATUS[MODES.number],
     valueElement: elements.numberBox
   }),
   [MODES.yesno]: createModeConfig({
     modeName: MODES.yesno,
     button: elements.yesNoMode,
-    status: 'yes/no mode',
+    status: MODE_STATUS[MODES.yesno],
     getText() {
       return state.yesNoValue.trim();
     },
