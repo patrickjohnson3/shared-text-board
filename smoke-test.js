@@ -9,6 +9,7 @@ const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)]
     source: fs.readFileSync(match[1], 'utf8')
   }));
 const expectedScripts = ['dom.js', 'modes.js', 'panel.js', 'speech.js', 'fullscreen.js', 'app.js'];
+const expectedPanelControlSelector = 'button, select, textarea, input, [tabindex]:not([tabindex="-1"])';
 
 const IDS = {
   status: 'status',
@@ -128,7 +129,8 @@ class Element {
     this.listeners[type].push(listener);
   }
 
-  querySelectorAll() {
+  querySelectorAll(selector) {
+    assert(selector === expectedPanelControlSelector, `Unexpected selector: ${selector}`);
     return this.focusableControls;
   }
 
