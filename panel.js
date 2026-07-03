@@ -80,6 +80,8 @@ function lastFocusable(controls) {
 }
 
 function trapFocus(event, controls) {
+  if (!controls.length) return;
+
   const firstControl = firstFocusable(controls);
   const lastControl = lastFocusable(controls);
 

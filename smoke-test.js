@@ -325,6 +325,14 @@ async function assertAppBehavior(harness) {
   await document.dispatchKeydown({ key: 'Tab' });
   assert(document.activeElement === elements.closeOptionsBtn, 'Tab trap did not recover lost focus');
 
+  elements.optionsPanel.focusableControls = [];
+  await document.dispatchKeydown({ key: 'Tab' });
+  elements.optionsPanel.focusableControls = [
+    elements.closeOptionsBtn,
+    elements.themeSelect,
+    elements.fullscreenBtn
+  ];
+
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, document.body, 'Fullscreen did not target the page body');
   assert(elements.fullscreenBtn.textContent === 'exit fullscreen', 'Fullscreen button label did not update after entering fullscreen');
