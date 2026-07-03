@@ -261,6 +261,7 @@ async function assertAppBehavior(harness) {
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, document.body, 'Fullscreen did not target the page body');
   assertText(elements.fullscreenBtn, 'exit fullscreen', 'Fullscreen button label did not update after entering fullscreen');
+  assert(document.activeElement === elements.optionsBtn, 'Fullscreen did not restore focus after closing panel');
 
   await elements.fullscreenBtn.click();
   assertFullscreenTarget(document, null, 'Fullscreen did not exit');

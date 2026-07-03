@@ -28,7 +28,7 @@ async function toggleFullscreen() {
       await target.requestFullscreen();
     }
     syncFullscreenState();
-    closePanel({ restoreFocus: false });
+    closePanel();
   } catch {
     setStatus(STATUS.fullscreenBlocked);
   }

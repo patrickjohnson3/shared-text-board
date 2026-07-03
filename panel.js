@@ -49,7 +49,9 @@ function restorePanelFocus() {
 
 function openModal() {
   if (isPanelOpen()) return;
-  state.panelReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : elements.optionsBtn;
+  state.panelReturnFocus = document.activeElement instanceof HTMLElement && document.activeElement !== elements.body
+    ? document.activeElement
+    : elements.optionsBtn;
   syncModalAttributes(true);
   focusDefaultPanelControl();
 }
