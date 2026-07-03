@@ -240,7 +240,10 @@ function runApp(context) {
 }
 
 async function assertAppBehavior(harness) {
-  const { app, document, elements, speech } = harness;
+  const { app, context, document, elements, speech } = harness;
+
+  context.setMode('missing');
+  assert(elements.status.textContent === 'mode unavailable', 'Invalid mode did not update status');
 
   await elements.numberMode.click();
   assert(document.body.classList.contains('mode-number'), 'Number mode class was not applied');

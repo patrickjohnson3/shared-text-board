@@ -109,6 +109,11 @@ function syncModeUI() {
 }
 
 function setMode(nextMode) {
+  if (!modeConfigs[nextMode]) {
+    setStatus('mode unavailable');
+    return;
+  }
+
   blurActiveTextField();
   state.mode = nextMode;
   syncUI({ mode: true });
