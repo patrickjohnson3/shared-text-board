@@ -36,6 +36,14 @@ const elements = {
 const themeStorageKey = 'shared-text-board-theme';
 const validThemes = new Set(['dark', 'light']);
 const panelControls = [elements.closeOptionsBtn, elements.themeSelect, elements.fullscreenBtn];
+const STATUS = {
+  modeUnavailable: 'mode unavailable',
+  speechUnavailable: 'speech unavailable',
+  speechBlocked: 'speech blocked',
+  themeUnavailable: 'theme unavailable',
+  fullscreenUnavailable: 'fullscreen unavailable',
+  fullscreenBlocked: 'fullscreen blocked'
+};
 
 // State and configuration
 const state = {
@@ -111,7 +119,7 @@ function syncModeUI() {
 
 function setMode(nextMode) {
   if (!modeConfigs[nextMode]) {
-    setStatus('mode unavailable');
+    setStatus(STATUS.modeUnavailable);
     return;
   }
 
@@ -144,7 +152,7 @@ function speak() {
   if (!text) return;
 
   if (!('speechSynthesis' in window)) {
-    setStatus('speech unavailable');
+    setStatus(STATUS.speechUnavailable);
     return;
   }
 
@@ -154,7 +162,7 @@ function speak() {
     utterance.rate = 0.9;
     window.speechSynthesis.speak(utterance);
   } catch {
-    setStatus('speech blocked');
+    setStatus(STATUS.speechBlocked);
   }
 }
 
@@ -177,7 +185,7 @@ function saveTheme(nextTheme) {
 
 function setTheme(nextTheme) {
   if (!validThemes.has(nextTheme)) {
-    setStatus('theme unavailable');
+    setStatus(STATUS.themeUnavailable);
     return;
   }
 
@@ -280,7 +288,7 @@ function fullscreenTarget() {
 
 async function toggleFullscreen() {
   if (!document.fullscreenEnabled) {
-    setStatus('fullscreen unavailable');
+    setStatus(STATUS.fullscreenUnavailable);
     return;
   }
 
@@ -290,14 +298,14 @@ async function toggleFullscreen() {
     } else {
       const target = fullscreenTarget();
       if (!target) {
-        setStatus('fullscreen unavailable');
+        setStatus(STATUS.fullscreenUnavailable);
         return;
       }
       await target.requestFullscreen();
     }
     closePanel({ restoreFocus: false });
   } catch {
-    setStatus('fullscreen blocked');
+    setStatus(STATUS.fullscreenBlocked);
   }
 }
 
