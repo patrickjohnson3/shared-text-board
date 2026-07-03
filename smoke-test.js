@@ -76,6 +76,11 @@ function assertTheme(document, expected, message) {
   assert(document.body.dataset.theme === expected, message);
 }
 
+function assertThemeOptions(elements) {
+  assert(elements.themeSelect.innerHTML.includes('value="dark"'), 'Dark theme option was not rendered');
+  assert(elements.themeSelect.innerHTML.includes('value="light"'), 'Light theme option was not rendered');
+}
+
 function assertFullscreenTarget(document, expected, message) {
   assert(document.fullscreenElement === expected, message);
 }
@@ -237,6 +242,7 @@ async function assertAppBehavior(harness) {
   assert(app.hasAttribute('inert'), 'Main app was not made inert while panel is open');
   assert(!elements.optionsPanel.hasAttribute('inert'), 'Options panel stayed inert after opening');
   assert(document.activeElement === elements.themeSelect, 'Opening panel did not focus theme select');
+  assertThemeOptions(elements);
 
   elements.themeSelect.value = 'light';
   await elements.themeSelect.dispatchEvent('change');
