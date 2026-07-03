@@ -46,7 +46,7 @@ function assert(condition, message) {
 }
 
 function assertRequiredMarkup() {
-  const missingIds = requiredIds.filter((id) => !html.includes(`id="${id}"`));
+  const missingIds = requiredIds.filter((id) => !new RegExp(`\\bid="${id}"`).test(html));
   if (missingIds.length) {
     throw new Error(`Missing required element id(s): ${missingIds.join(', ')}`);
   }
