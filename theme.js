@@ -5,20 +5,28 @@ const THEME_OPTIONS = [
 ];
 const validThemes = new Set(THEME_OPTIONS.map((theme) => theme.value));
 
-function loadTheme() {
+function safeLocalStorageGet(key) {
   try {
-    return localStorage.getItem(themeStorageKey) === 'light' ? 'light' : 'dark';
+    return localStorage.getItem(key);
   } catch {
-    return 'dark';
+    return null;
   }
 }
 
-function saveTheme(nextTheme) {
+function safeLocalStorageSet(key, value) {
   try {
-    localStorage.setItem(themeStorageKey, nextTheme);
+    localStorage.setItem(key, value);
   } catch {
     return;
   }
+}
+
+function loadTheme() {
+  return safeLocalStorageGet(themeStorageKey) === 'light' ? 'light' : 'dark';
+}
+
+function saveTheme(nextTheme) {
+  safeLocalStorageSet(themeStorageKey, nextTheme);
 }
 
 function renderThemeOptions() {
