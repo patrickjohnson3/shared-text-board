@@ -3,6 +3,11 @@ function modeClass(modeName) {
 }
 
 function createModeConfig({ modeName, button, status, valueElement, getText, clear }) {
+  if (!button) throw new Error(`Missing button for mode: ${modeName}`);
+  if (!status) throw new Error(`Missing status for mode: ${modeName}`);
+  if (!valueElement && !getText) throw new Error(`Missing text source for mode: ${modeName}`);
+  if (!valueElement && !clear) throw new Error(`Missing clear handler for mode: ${modeName}`);
+
   return {
     button,
     className: modeClass(modeName),
